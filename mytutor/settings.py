@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from decouple import config, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,6 +31,7 @@ INSTALLED_APPS = [
     'rest_framework',   
     'rest_framework.authtoken',
     #'django_rest_passwordreset',
+    'decouple',
 ]
 
 MIDDLEWARE = [
@@ -76,7 +78,7 @@ DATABASES = {
         'NAME': 'posgres2',
         'USER': 'postgres',
         'PASSWORD': '123456',
-        'HOST': 'localhost',    
+        'HOST': config('DATABASE_HOST'),    
         'PORT': '5432',
     }
 }
