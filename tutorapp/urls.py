@@ -7,5 +7,5 @@ urlpatterns = [
     path('login-teacher/', login_teacher, name='login-teacher'),
     path('login-student/', login_student, name='login-student'),
     path('logout/', logout, name='logout'),
-    path('change_password/', change_password, name='change-password')
+    #path('change_password/', change_password, name='change-password')
 ]
