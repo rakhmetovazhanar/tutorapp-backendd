@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  tutor-db:
+    image: postgres
+    ports:
+      - '5432:5432'
+    container_name: tutor-db
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=posgres2
+    networks:
+      - tutorapp-network
+
+networks:
+  tutorapp-network:
+    driver: bridge
