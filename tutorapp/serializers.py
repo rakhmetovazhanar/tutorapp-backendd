@@ -30,10 +30,10 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ['age', 'city', 'phone_number', 'email', 'password']
+        fields = ['age', 'city', 'phone_number', 'username', 'password']
 
     def create(self, validated_data):
-        user_data = {'username': validated_data.pop('email'), 'password': validated_data.pop('password')}
+        user_data = {'username': validated_data.pop('username'), 'password': validated_data.pop('password')}
         user = CustomUser.objects.create_user(**user_data)
         student = Student.objects.create(user=user, **validated_data)
         return student
