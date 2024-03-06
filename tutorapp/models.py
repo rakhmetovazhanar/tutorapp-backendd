@@ -27,8 +27,8 @@ class Teacher(models.Model):
 
 class Student(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="student_account")
-    #first_name = models.CharField(max_length=250, blank=False, null=False)
-    #last_name = models.CharField(max_length=250, blank=False, null=False)
+    name = models.CharField(max_length=250, blank=False, null=False)
+    surname = models.CharField(max_length=250, blank=False, null=False)
     city = models.CharField(max_length=250, null=False, blank=False)
     phone_number = models.CharField(max_length=250, blank=False, null=False)
     age = models.IntegerField(blank=False, null=False)
