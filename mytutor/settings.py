@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-# load_dotenv()
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -74,8 +74,8 @@ WSGI_APPLICATION = 'mytutor.wsgi.application'
 
 databaseName = os.getenv('DATABASE_NAME')
 databaseUser = os.getenv('DATABASE_USER')
-databaseHost = os.getenv('DATABASE_HOST', 'localhost')
-databasePassword = os.getenv('DATABASE_PASSWORD')
+databaseHost = os.getenv('DATABASE_HOST')
+databasePassword = os.environ.get('DATABASE_PASSWORD')
 
 DATABASES = {
     'default': {
