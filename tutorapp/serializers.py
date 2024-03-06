@@ -29,7 +29,7 @@ class StudentSerializer(serializers.ModelSerializer):
     #user = CustomUserSerializer()
 
     class Meta:
-        model = Student
+        model = Student, CustomUser
         fields = ['age', 'city', 'name', 'password', 'phone_number', 'surname', 'username']
 
     def create(self, validated_data):
