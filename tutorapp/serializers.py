@@ -32,11 +32,11 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student, CustomUser
         fields = ['age', 'city', 'name', 'password', 'phone_number', 'surname', 'username']
 
-    def create(self, validated_data):
+    '''def create(self, validated_data):
         user_data = {'username': validated_data.pop('username'), 'password': validated_data.pop('password')}
         user = CustomUser.objects.create_user(**user_data)
         student = Student.objects.create(user=user, phone_number=validated_data.pop('phone_number'), city=validated_data.pop('city'), age=validated_data.pop('age'))
-        return student
+        return student'''
     
 class ChangePasswordSerializer (serializers.Serializer):
     old_password = serializers.CharField(required=True)
