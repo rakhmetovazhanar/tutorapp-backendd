@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
+# from dotenv import load_dotenv
 
+# load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,7 +16,7 @@ SECRET_KEY = 'django-insecure-$6yn9vpcm@_avh0^^6^h@b1%)6xt1+*l#!=yil+z#$0idm)xbk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['134.209.250.123']
+ALLOWED_HOSTS = ['134.209.250.123', 'localhost']
 
 # Application definition
 
@@ -70,13 +72,18 @@ WSGI_APPLICATION = 'mytutor.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+databaseName = os.getenv('DATABASE_NAME')
+databaseUser = os.getenv('DATABASE_USER')
+databaseHost = os.getenv('DATABASE_HOST', 'localhost')
+databasePassword = os.getenv('DATABASE_PASSWORD')
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'posgres2',
-        'USER': 'postgres',
-        'PASSWORD': '123456',
-        'HOST': 'localhost',    
+        'NAME': databaseName,
+        'USER': databaseUser,
+        'PASSWORD': databasePassword,
+        'HOST': databaseHost,    
         'PORT': '5432',
     }
 }

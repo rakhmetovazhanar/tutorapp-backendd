@@ -36,7 +36,6 @@ def login_teacher(request):
                 'token': token.key,
                 'username': user.username,
                 #'role': user.role,
-
             }
 
             if user.role == 'teacher':
