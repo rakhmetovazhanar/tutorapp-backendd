@@ -52,7 +52,7 @@ def login_teacher(request):
 @api_view(['POST'])
 def register_student(request):
     if request.method == 'POST':
-        request.data['user']['role'] = 'student'
+        
         serializer = StudentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
