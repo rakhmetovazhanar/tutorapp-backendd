@@ -21,8 +21,8 @@ def register_teacher(request):
 @api_view(['POST'])
 def login_teacher(request):
     if request.method == 'POST':
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data['username']
+        password = request.data['password']
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -59,8 +59,8 @@ def register_student(request):
 @api_view(['POST'])
 def login_student(request):
     if request.method == 'POST':
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data['username']
+        password = request.data['password']
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
