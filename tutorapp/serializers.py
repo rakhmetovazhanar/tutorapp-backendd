@@ -9,18 +9,19 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         role = validated_data.pop('role')
-        user = CustomUser.objects.create_user(**validated_data, role=role)
+        user = CustomUser.objects.create_user(username='username', password='password', role=role)
         return user
 
 class TeacherSerializer(serializers.ModelSerializer):
-    user = CustomUserSerializer()
+    username = CustomUserSerializer('username')
+    password = CustomUserSerializer('password')
 
     class Meta:
         model = Teacher
-        fields = ['first_name', 'last_name', 'age', 'gender', 'city', 'phone_number', 'experience_year', 'user']
+        fields = ['age', 'city', 'password', 'name', 'password', 'phone_number', 'surname', 'username']
 
     def create(self, validated_data):
-        user_data = validated_data.pop('user')
+        user_data = validated_data.pop('username', 'password')
         user = CustomUser.objects.create_user(**user_data)
         teacher = Teacher.objects.create(user=user, **validated_data)
         return teacher
