@@ -1,10 +1,14 @@
+import random
+from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .serializers import CustomUserSerializer
+from .models import CustomUser, EmailCode
+from .serializers import CustomUserSerializer, EmailUserSerializer
 from rest_framework.permissions import IsAuthenticated
+from django.conf.global_settings import EMAIL_HOST_USER
 
 
 @api_view(['POST'])
@@ -96,6 +100,27 @@ def logout(request):
             return Response({'error': 'User not logged in.'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def forgot_password(request):
+    username = request.data['username']
+    user: CustomUser = CustomUser.objects.get(username=username)
+    if user:
+        code = random.randint(1000, 9999)
+
+        email_code = EmailCode.objects.get_or_create(user=user, code=code)
+
+        subject = 'Verification code'
+        message = f'Code to reset your password: {code}'
+        from_email = EMAIL_HOST_USER
+
+        result = send_mail(subject, message, from_email, [user.username])
+
+        if result > 0:
+            return Response({'Verification code is sent.'}, status=status.HTTP_200_OK)
+
+    return Response({'message': 'Something went wrong.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 '''@api_view(['POST'])

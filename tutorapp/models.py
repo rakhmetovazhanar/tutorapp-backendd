@@ -24,6 +24,11 @@ class CustomUser(AbstractUser):
     phone_number = models.CharField(null=False, blank=False, max_length=25)
 
 
+class EmailCode(models.Model):
+    user = models.OneToOneField(CustomUser, max_length=25, blank=False, null=False, on_delete=models.CASCADE)
+    code = models.CharField(max_length=1000, blank=False, unique=True)
+
+
 '''class Teacher(models.Model):
     GENDER_CHOICE = (
         ('Женский', 'Женский'), 

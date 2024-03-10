@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser, EmailCode
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -23,6 +23,21 @@ class CustomUserSerializer(serializers.ModelSerializer):
             role=validated_data.pop('role')
         )
         return user
+
+
+class EmailUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailCode
+        fields = '__all__'
+
+    def create(self, validated_data):
+        print(validated_data)
+        email_code = EmailCode(
+            user=validated_data.pop('user'),
+            code=validated_data.pop('code')
+        )
+
+        return email_code
 
 
 '''class TeacherSerializer(serializers.ModelSerializer):
@@ -64,7 +79,6 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class ResetPasswordEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)'''
-
 
 '''class CourseSerializer(serializers.ModelSerializer):
     class Meta:
