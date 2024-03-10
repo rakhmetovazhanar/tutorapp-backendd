@@ -123,6 +123,29 @@ def forgot_password(request):
     return Response({'message': 'Something went wrong.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@api_view(['POST'])
+def verify_code(request):
+    username = request.data['username']
+    code = request.data['code']
+
+    user: CustomUser = CustomUser.objects.get(username=username)
+    email_code: EmailCode = EmailCode.objects.get(user=user, code=code)
+
+    if email_code and user:
+        login(request, user)
+        token, created = Token.objects.get_or_create(user=user)
+
+        response_data = {
+            'token': token.key,
+            'username': user.username,
+            'role': user.role,
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+    return Response({'message': 'Invalid code'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 '''@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def change_password(request):
