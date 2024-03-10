@@ -146,22 +146,19 @@ def verify_code(request):
     return Response({'message': 'Invalid code'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-'''@api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@api_view(['POST'])
 def change_password(request):
-        if request.method == 'POST':
-            serializer = ChangePasswordSerializer(data=request.data)
-            if serializer.is_valid():
-                user = request.user
-                if user.check_password(serializer.data.get('old_password')):
-                    user.set_password(serializer.data.get('new_password'))
-                    user.save()
-                    update_session_auth_hash(request, user)
-                    return Response({'message': 'Password changed successfully'}, status=statu.HTTP_200_OK)
-            return Response({'error': 'Incorrect old password.'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)'''
+    token = request.headers.get('Authorization').split('Bearer ')[1]
 
+    new_password = request.data['new_password']
+    confirm_password = request.data['confirm_password']
 
+    if new_password != confirm_password:
+        return Response({'message': 'Passwords are not match.'}, status=status.HTTP_400_BAD_REQUEST)
 
-                
+    user: CustomUser = Token.objects.get(key=token).user
 
+    user.set_password(new_password)
+    user.save()
+
+    return Response({'message': 'Password is successfully changed.'}, status=status.HTTP_200_OK)

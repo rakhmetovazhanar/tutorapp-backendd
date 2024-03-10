@@ -9,5 +9,5 @@ urlpatterns = [
     path('logout/', logout, name='logout'),
     path('forgot-password/', forgot_password, name='forgot-password'),
     path('verify-code/', verify_code, name='verify-code'),
-    #path('change_password/', change_password, name='change-password')
+    path('change-password/', change_password, name='change-password')
 ]
