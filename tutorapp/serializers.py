@@ -13,8 +13,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user = CustomUser.objects.create_user(
             age=validated_data.pop('age'),
             city=validated_data.pop('city'),
-            experience=validated_data.pop('experience'),
-            gender=validated_data.pop('gender'),
+            experience=validated_data.pop('experience', None),
+            gender=validated_data.pop('gender', None),
             password=validated_data.pop('password'),
             name=validated_data.pop('name'),
             phone_number=validated_data.pop('phone_number'),
