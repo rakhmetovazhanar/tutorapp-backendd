@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import register_student, register_teacher, login_student, login_teacher, logout, change_password
+from .views import register_student, register_teacher, login_student, login_teacher, logout
 
 urlpatterns = [
     path('register-teacher/', register_teacher, name='register-teacher'),
