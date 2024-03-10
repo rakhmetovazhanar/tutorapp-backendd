@@ -4,8 +4,8 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     GENDER_CHOICE = (
-        ('Женский', 'Женский'),
-        ('Мужской', 'Мужской'),
+        ('Женщина', 'Женщина'),
+        ('Мужчина', 'Мужчина'),
     )
     EXP_CHOICE = (
         ('От 1 года до 3 лет', 'От 1 года до 3 лет'),
