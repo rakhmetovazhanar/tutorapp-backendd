@@ -189,15 +189,14 @@ def add_course(request):
     token = request.headers.get('Authorization').split('Bearer ')[1]
     print(token)
     teacher_id: CustomUser = Token.objects.get(key=token).user_id
+    print(teacher_id)
 
     serializer = CourseSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(teacher_id=teacher_id,
-                        category_id=Category(id=id),
-                        name=serializer.validated_data['name'],
-                        description=serializer.validated_data['description'],
-                        level=serializer.validated_data['level'],
-                        language=serializer.validated_data['language'])
+                        category_id=CustomUser.objects.get(id),
+
+                        )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

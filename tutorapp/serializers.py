@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, EmailCode, Course
+from .models import CustomUser, EmailCode, Course, Category
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -60,6 +60,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         course = Course.objects.create(
+            teacher_id=validated_data.pop('teacher_id'),
             name=validated_data.pop('name'),
             description=validated_data.pop('description'),
             level=validated_data.pop('level'),
