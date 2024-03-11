@@ -5,8 +5,8 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .models import CustomUser, EmailCode
-from .serializers import CustomUserSerializer, EmailUserSerializer
+from .models import CustomUser, EmailCode, Course, Category
+from .serializers import CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer, CourseSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
 
@@ -162,3 +162,42 @@ def change_password(request):
     user.save()
 
     return Response({'message': 'Password is successfully changed.'}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def student_profile(request):
+    token = request.headers.get('Authorization').split('Bearer ')[1]
+    user: CustomUser = Token.objects.get(key=token).user
+
+    profile_info = CustomUser.objects.get(username=user)
+    serializer = StudentProfileSerializer(profile_info)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def teacher_profile(request):
+    token = request.headers.get('Authorization').split('Bearer ')[1]
+    user: CustomUser = Token.objects.get(key=token).user
+
+    profile_info = CustomUser.objects.get(username=user)
+    serializer = TeacherProfileSerializer(profile_info)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def add_course(request):
+    token = request.headers.get('Authorization').split('Bearer ')[1]
+    print(token)
+    teacher_id: CustomUser = Token.objects.get(key=token).user_id
+
+    serializer = CourseSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(teacher_id=teacher_id,
+                        category_id=Category(id=id),
+                        name=serializer.validated_data['name'],
+                        description=serializer.validated_data['description'],
+                        level=serializer.validated_data['level'],
+                        language=serializer.validated_data['language'])
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

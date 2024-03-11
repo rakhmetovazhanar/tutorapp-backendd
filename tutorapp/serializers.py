@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, EmailCode
+from .models import CustomUser, EmailCode, Course
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -40,51 +40,30 @@ class EmailUserSerializer(serializers.ModelSerializer):
         return email_code
 
 
-'''class TeacherSerializer(serializers.ModelSerializer):
-    # username = CustomUserSerializer()
-    # password = CustomUserSerializer()
-
+class StudentProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Teacher
-        fields = ['first_name', 'last_name', 'age', 'gender', 'city', 'phone_number', 'experience_year', 'username',
-                  'password']
-
-    def create(self, validated_data):
-        user_data = validated_data.pop('username', 'password')
-        user = CustomUser.objects.create_user(**user_data)
-        teacher = Teacher.objects.create(user=user, **validated_data)
-        return teacher
+        model = CustomUser
+        fields = ['age', 'city', 'name', 'phone_number', 'surname', 'username', 'role']
 
 
-class StudentSerializer(serializers.ModelSerializer):
-    user = CustomUserSerializer()
-
+class TeacherProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Student
-        fields = ['age', 'city', 'password', 'name', 'password', 'phone_number', 'surname', 'username']
-
-    def create(self, validated_data):
-        user_data = validated_data.pop('username', 'password')
-        user = CustomUser.objects.create_user(**user_data, role='student')
-        student = Student.objects.create(user=user, phone_number=validated_data.pop('phone_number'),
-                                         city=validated_data.pop('city'), age=validated_data.pop('age'),
-                                         surname=validated_data('surname'))
-        return student
+        model = CustomUser
+        fields = ['age', 'city', 'experience', 'gender', 'name',
+                  'phone_number', 'surname', 'username', 'role']
 
 
-class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(required=True)
-    new_password = serializers.CharField(required=True)
-
-
-class ResetPasswordEmailSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)'''
-
-'''class CourseSerializer(serializers.ModelSerializer):
+class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['course_name', 'course_description', 'course_cost']
+        fields = ['name', 'description', 'level', 'language', 'teacher_id', 'category_id']
 
-        def create(self):
-            course = Course.objects.create(**validated_data)
-           '''
+    def create(self, validated_data):
+        course = Course.objects.create(
+            name=validated_data.pop('name'),
+            description=validated_data.pop('description'),
+            level=validated_data.pop('level'),
+            language=validated_data.pop('language'),
+        )
+        return course
+

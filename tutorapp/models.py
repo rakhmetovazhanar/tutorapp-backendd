@@ -25,38 +25,29 @@ class CustomUser(AbstractUser):
 
 
 class EmailCode(models.Model):
-    user = models.OneToOneField(CustomUser, max_length=25, blank=False, null=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, max_length=25, blank=False, null=False, on_delete=models.CASCADE)
     code = models.CharField(max_length=1000, blank=False, unique=True)
 
 
-'''class Teacher(models.Model):
-    GENDER_CHOICE = (
-        ('Женский', 'Женский'), 
-        ('Мужской', 'Мужской'),
-    )
-    EXP_CHOICE = (
-        ('От 1 года до 3 лет', 'От 1 года до 3 лет'),
-        ('1 год', '1 год'),
-        ('Нет опыта', 'Нет опыта'),
-    )
-
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="teacher_account")
-    first_name = models.CharField(max_length=250, blank=False, null=False)
-    last_name = models.CharField(max_length=250, blank=False, null=False)
-    city = models.CharField(max_length=250, null=False, blank=False)
-    age = models.IntegerField(blank=False, null=False)
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICE, null=False)
-    experience_year = models.CharField(max_length=50, choices=EXP_CHOICE)
-    phone_number = models.CharField(max_length=250, blank=False, null=False)
-
-class Student(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="student_account")
-    name = models.CharField(max_length=250, blank=False, null=False)
-    surname = models.CharField(max_length=250, blank=False, null=False)
-    city = models.CharField(max_length=250, null=False, blank=False)
-    phone_number = models.CharField(max_length=250, blank=False, null=False)
-    age = models.IntegerField(blank=False, null=False)'''
-
-
 class Category(models.Model):
-    category_name = models.CharField(max_length=250, blank=False, null=False)
+    CATEGORY_CHOICE = (
+        ('Programming Language', 'Programming Language'),
+        ('Math', 'Math'),
+        ('Chemistry', 'Chemistry'),
+        ('Physics', 'Physics'),
+        ('Languages', 'Languages'),
+    )
+    category_name = models.CharField(max_length=250, blank=False, null=False, choices=CATEGORY_CHOICE)
+
+
+class Course(models.Model):
+    teacher_id = models.ForeignKey(CustomUser, max_length=25, blank=False, null=False, on_delete=models.CASCADE)
+    category_id = models.ForeignKey(Category, max_length=250, blank=False, null=False, on_delete=models.CASCADE)
+    name = models.CharField(max_length=250, blank=False, null=False)
+    description = models.CharField(max_length=250, blank=False, null=False)
+    level = models.CharField(max_length=250, blank=False, null=False)
+    language = models.CharField(max_length=250, blank=False, null=False)
+
+
+
+
