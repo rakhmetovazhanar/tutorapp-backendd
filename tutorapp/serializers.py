@@ -69,3 +69,17 @@ class CourseSerializer(serializers.ModelSerializer):
         )
         return course
 
+
+class CourseUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['category_id', 'name', 'description', 'level', 'language']
+
+    def update(self, instance, validated_data):
+        instance.level = validated_data.pop('level', instance.level)
+        instance.language = validated_data.pop('language', instance.language)
+        instance.description = validated_data.pop('description', instance.description)
+        instance.name = validated_data.pop('name', instance.name)
+        instance.category_id = validated_data.pop('category_id', instance.category_id)
+
+        return instance

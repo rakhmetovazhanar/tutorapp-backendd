@@ -12,5 +12,8 @@ urlpatterns = [
     path('change-password/', change_password, name='change-password'),
     path('student-profile/', student_profile, name='student-profile'),
     path('teacher-profile/', teacher_profile, name='teacher-profile'),
-    #path('add-course/', add_course, name='add-course'),
+    path('add-course/', add_course, name='add-course'),
+    path('get-courses/', get_courses, name='get-courses'),
+    path('delete-course/<int:course>', delete_course, name='delete-course'),
+    path('update-course/<int:course>', update_course, name='update-course'),
 ]

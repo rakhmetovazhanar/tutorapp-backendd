@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from .models import CustomUser, EmailCode, Course, Category
 from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
-                          CourseSerializer)
+                          CourseSerializer, CourseUpdateSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
 
@@ -167,6 +167,7 @@ def change_password(request):
 @permission_classes([IsAuthenticated])
 def student_profile(request):
     user = request.user
+    print(user)
     profile_info = CustomUser.objects.get(username=user)
     serializer = StudentProfileSerializer(profile_info)
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -182,17 +183,49 @@ def teacher_profile(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-'''@api_view(['POST'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_course(request):
-    teacher_id = request.user
-    category_id = Category.objects.get(id=request.data['category_id'])
-
     serializer = CourseSerializer(data=request.data)
 
     if serializer.is_valid():
-        serializer.save(teacher_id=teacher_id,
-                        category_id=category_id)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)'''
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET'])
+def get_courses(request):
+    courses = Course.objects.filter(teacher_id=request.user.id)
+
+    return Response(CourseSerializer(courses, many=True).data, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+def delete_course(request, course: int):
+    try:
+        course = Course.objects.get(id=course)
+
+        if course.teacher_id_id == request.user.id:
+            course.delete()
+            return Response({'message': 'Course successfully deleted!'}, status=status.HTTP_200_OK)
+
+        return Response({'message': 'Not allowed to delete course'}, status=status.HTTP_400_BAD_REQUEST)
+    except Course.DoesNotExist:
+        return Response({'message': 'Course not found!'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PUT'])
+def update_course(request, course: int):
+    try:
+        course = Course.objects.get(id=course)
+
+        if course.teacher_id_id == request.user.id:
+            serializer = CourseUpdateSerializer(course, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response({'message': 'Not allowed to update course'}, status=status.HTTP_400_BAD_REQUEST)
+    except Course.DoesNotExist:
+        return Response({'message': 'Course not found!'}, status=status.HTTP_404_NOT_FOUND)
