@@ -12,5 +12,5 @@ urlpatterns = [
     path('change-password/', change_password, name='change-password'),
     path('student-profile/', student_profile, name='student-profile'),
     path('teacher-profile/', teacher_profile, name='teacher-profile'),
-    path('add-course/', add_course, name='add-course'),
+    #path('add-course/', add_course, name='add-course'),
 ]
