@@ -56,11 +56,12 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['name', 'description', 'level', 'language', 'teacher_id', 'category_id']
+        fields = ['teacher_id', 'category_id', 'name', 'description', 'level', 'language']
 
     def create(self, validated_data):
         course = Course.objects.create(
             teacher_id=validated_data.pop('teacher_id'),
+            category_id=validated_data.pop('category_id'),
             name=validated_data.pop('name'),
             description=validated_data.pop('description'),
             level=validated_data.pop('level'),
