@@ -182,20 +182,17 @@ def teacher_profile(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@api_view(['POST'])
+'''@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_course(request):
-    '''teacher_id = request.user.id
+    teacher_id = request.user
+    category_id = Category.objects.get(id=request.data['category_id'])
 
-    course_info = Course.objects.create(teacher_id=teacher_id,
-                                        category_id=request.data['category_id'],
-                                        name=request.data['name'],
-                                        description=request.data['description'],
-                                        level=request.data['level'],
-                                        language=request.data['language'])
+    serializer = CourseSerializer(data=request.data)
 
-    if course_info.:
-        return Response(course_info, status=status.HTTP_201_CREATED)
-    else:
-    return Response({'message': 'Passwords are not match.'}, status=status.HTTP_400_BAD_REQUEST)'''
+    if serializer.is_valid():
+        serializer.save(teacher_id=teacher_id,
+                        category_id=category_id)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)'''
 
