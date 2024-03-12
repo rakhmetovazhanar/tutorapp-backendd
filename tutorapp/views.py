@@ -185,7 +185,7 @@ def teacher_profile(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_course(request):
-    teacher_id = request.user.id
+    '''teacher_id = request.user.id
 
     course_info = Course.objects.create(teacher_id=teacher_id,
                                         category_id=request.data['category_id'],
@@ -197,5 +197,5 @@ def add_course(request):
     if course_info.:
         return Response(course_info, status=status.HTTP_201_CREATED)
     else:
-    return Response({'message': 'Passwords are not match.'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'message': 'Passwords are not match.'}, status=status.HTTP_400_BAD_REQUEST)'''
 
