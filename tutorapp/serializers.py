@@ -16,9 +16,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
             experience=validated_data.pop('experience', None),
             gender=validated_data.pop('gender', None),
             password=validated_data.pop('password'),
-            name=validated_data.pop('first_name'),
+            first_name=validated_data.pop('first_name'),
             phone_number=validated_data.pop('phone_number'),
-            surname=validated_data.pop('last_name'),
+            last_name=validated_data.pop('last_name'),
             username=validated_data.pop('username'),
             role=validated_data.pop('role')
         )
