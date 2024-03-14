@@ -18,8 +18,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
             password=validated_data.pop('password'),
             name=validated_data.pop('first_name'),
             phone_number=validated_data.pop('phone_number'),
-            surname=validated_data.pop('surname'),
-            username=validated_data.pop('last_name'),
+            surname=validated_data.pop('last_name'),
+            username=validated_data.pop('username'),
             role=validated_data.pop('role')
         )
         return user
