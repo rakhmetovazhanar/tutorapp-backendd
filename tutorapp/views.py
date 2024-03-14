@@ -96,7 +96,7 @@ def logout(request):
             '''token_key = request.auth.key
             token = Token.objects.get(key=token_key)
             token.delete()'''
-            request.user.auth_token.delete()
+            request.user.token = None
             return Response({'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
         except Token.DoesNotExist:
             return Response({'error': 'User not logged in.'}, status=status.HTTP_400_BAD_REQUEST)
