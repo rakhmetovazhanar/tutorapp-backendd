@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, EmailCode, Course, Category
+from .models import CustomUser, EmailCode, Course, Category, Lesson
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -53,7 +53,7 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
                   'phone_number', 'last_name', 'username', 'role']
 
 
-class CourseSerializer(serializers.ModelSerializer):
+class AddCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ['teacher_id', 'category_id', 'name', 'description', 'level', 'language']
@@ -68,6 +68,20 @@ class CourseSerializer(serializers.ModelSerializer):
             language=validated_data.pop('language'),
         )
         return course
+
+
+class AddLessonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = ['course_id', 'start_date_time', 'end_date_time']
+
+    def create(self, validated_data):
+        lesson = Lesson.objects.create(
+            course_id=validated_data.pop('course_id'),
+            start_date_time=validated_data.pop('start_date_time'),
+            end_date_time=validated_data.pop('end_date_time')
+        )
+        return lesson
 
 
 class CourseUpdateSerializer(serializers.ModelSerializer):

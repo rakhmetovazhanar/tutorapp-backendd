@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from .models import CustomUser, EmailCode, Course, Category
 from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
-                          CourseSerializer, CourseUpdateSerializer)
+                          AddCourseSerializer, CourseUpdateSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
 
@@ -93,9 +93,10 @@ def login_student(request):
 def logout(request):
     if request.method == 'POST':
         try:
-            token_key = request.auth.key
+            '''token_key = request.auth.key
             token = Token.objects.get(key=token_key)
-            token.delete()
+            token.delete()'''
+            request.user.auth_token.delete()
             return Response({'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
         except Token.DoesNotExist:
             return Response({'error': 'User not logged in.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -186,7 +187,10 @@ def teacher_profile(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_course(request):
-    serializer = CourseSerializer(data=request.data)
+    course = Course.objects.get()
+
+
+    serializer = AddCourseSerializer(data=request.data)
 
     if serializer.is_valid():
         serializer.save()
@@ -198,7 +202,7 @@ def add_course(request):
 def get_courses(request):
     courses = Course.objects.filter(teacher_id=request.user.id)
 
-    return Response(CourseSerializer(courses, many=True).data, status=status.HTTP_200_OK)
+    return Response(AddCourseSerializer(courses, many=True).data, status=status.HTTP_200_OK)
 
 
 @api_view(['DELETE'])
@@ -229,3 +233,6 @@ def update_course(request, course: int):
         return Response({'message': 'Not allowed to update course'}, status=status.HTTP_400_BAD_REQUEST)
     except Course.DoesNotExist:
         return Response({'message': 'Course not found!'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
