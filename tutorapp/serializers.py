@@ -5,8 +5,8 @@ from .models import CustomUser, EmailCode, Course, Category
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['age', 'city', 'experience', 'gender', 'password', 'name',
-                  'phone_number', 'surname', 'username', 'role']
+        fields = ['age', 'city', 'experience', 'gender', 'password', 'first_name',
+                  'phone_number', 'last_name', 'username', 'role']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -16,10 +16,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
             experience=validated_data.pop('experience', None),
             gender=validated_data.pop('gender', None),
             password=validated_data.pop('password'),
-            name=validated_data.pop('name'),
+            name=validated_data.pop('first_name'),
             phone_number=validated_data.pop('phone_number'),
             surname=validated_data.pop('surname'),
-            username=validated_data.pop('username'),
+            username=validated_data.pop('last_name'),
             role=validated_data.pop('role')
         )
         return user
@@ -43,14 +43,14 @@ class EmailUserSerializer(serializers.ModelSerializer):
 class StudentProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['age', 'city', 'name', 'phone_number', 'surname', 'username', 'role']
+        fields = ['age', 'city', 'first_name', 'phone_number', 'last_name', 'username', 'role']
 
 
 class TeacherProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['age', 'city', 'experience', 'gender', 'name',
-                  'phone_number', 'surname', 'username', 'role']
+        fields = ['age', 'city', 'experience', 'gender', 'first_name',
+                  'phone_number', 'last_name', 'username', 'role']
 
 
 class CourseSerializer(serializers.ModelSerializer):
