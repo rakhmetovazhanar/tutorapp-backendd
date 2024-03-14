@@ -8,12 +8,13 @@ class CustomUser(AbstractUser):
         ('Мужчина', 'Мужчина'),
     )
     EXP_CHOICE = (
-        ('От 1 года до 3 лет', 'От 1 года до 3 лет'),
-        ('1 год', '1 год'),
+        ('Больше', 'Больше'),
+        ('От 3 года до 5 лет', 'От 3 года до 5 лет'),
+        ('До 3 лет', 'До 3 лет'),
         ('Нет опыта', 'Нет опыта'),
     )
-    name = models.CharField(max_length=250, blank=False, null=False)
-    surname = models.CharField(max_length=250, blank=False, null=False)
+    first_name = models.CharField(max_length=250, blank=False, null=False)
+    last_name = models.CharField(max_length=250, blank=False, null=False)
     username = models.EmailField(null=False, blank=False, unique=True)
     password = models.CharField(null=False, blank=False)
     age = models.IntegerField(null=False, blank=False)
