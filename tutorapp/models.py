@@ -23,6 +23,7 @@ class CustomUser(AbstractUser):
     experience = models.CharField(null=True, blank=False, choices=EXP_CHOICE)
     gender = models.CharField(null=True, blank=False, choices=GENDER_CHOICE)
     phone_number = models.CharField(null=False, blank=False, max_length=25)
+    bio = models.CharField(null=True, blank=True, max_length=500)
 
 
 class EmailCode(models.Model):
@@ -55,6 +56,7 @@ class Course(models.Model):
     description = models.CharField(max_length=250, blank=False, null=False)
     level = models.CharField(max_length=250, blank=False, null=False)
     language = models.CharField(max_length=250, blank=False, null=False)
+    cost = models.IntegerField(blank=False, null=True, default=0)
 
 
 class Lesson(models.Model):
@@ -63,5 +65,7 @@ class Lesson(models.Model):
     end_date_time = models.DateTimeField(max_length=250, blank=False, null=False)
 
 
-
+class CourseStudent(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    student = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 

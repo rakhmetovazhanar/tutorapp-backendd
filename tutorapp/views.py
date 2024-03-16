@@ -5,9 +5,11 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .models import CustomUser, EmailCode, Course, Category
+from .models import CustomUser, EmailCode, Course, Category, Lesson, CourseStudent
 from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
-                          AddCourseSerializer, CourseUpdateSerializer)
+                          AddCourseSerializer, CourseUpdateSerializer, AddLessonSerializer,
+                          UpdateTeacherProfileSerializer, EnrollToCourseSerializer, GetStudentCourses,
+                          LoginUserSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
 
@@ -42,7 +44,7 @@ def login_teacher(request):
 
             if user.role == 'teacher':
                 if user is not None:
-                    teacher_data = CustomUserSerializer(user).data
+                    teacher_data = LoginUserSerializer(user).data
                     response_data['data'] = teacher_data
 
             return Response(response_data)
@@ -80,7 +82,7 @@ def login_student(request):
 
             if user.role == 'student':
                 if user is not None:
-                    student_data = CustomUserSerializer(user).data
+                    student_data = LoginUserSerializer(user).data
                     response_data['data'] = student_data
 
             return Response(response_data)
@@ -187,22 +189,21 @@ def teacher_profile(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_course(request):
-    course = Course.objects.get()
+    serializer_add_course = AddCourseSerializer(data=request.data)
 
-
-    serializer = AddCourseSerializer(data=request.data)
-
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if serializer_add_course.is_valid():
+        serializer_add_course.save()
+        return Response(serializer_add_course.data, status=status.HTTP_201_CREATED)
+    return Response(serializer_add_course.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
-def get_courses(request):
-    courses = Course.objects.filter(teacher_id=request.user.id)
+def get_teacher_courses(request):
+    courses = Course.objects.filter(teacher_id=request.user.id).values(
+        'teacher_id_id', 'name', 'description', 'cost'
+    )
 
-    return Response(AddCourseSerializer(courses, many=True).data, status=status.HTTP_200_OK)
+    return Response(courses, status=status.HTTP_200_OK)
 
 
 @api_view(['DELETE'])
@@ -233,6 +234,61 @@ def update_course(request, course: int):
         return Response({'message': 'Not allowed to update course'}, status=status.HTTP_400_BAD_REQUEST)
     except Course.DoesNotExist:
         return Response({'message': 'Course not found!'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_teacher_profile(request, teacher: int):
+    try:
+        teacher = CustomUser.objects.get(id=teacher)
+
+        if teacher.id == request.user.id:
+            serializer = UpdateTeacherProfileSerializer(teacher, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response({'message': 'Not allowed to update teacher profile'}, status=status.HTTP_400_BAD_REQUEST)
+    except CustomUser.DoesNotExist:
+        return Response({'message': 'Profile not found!'}, status=status)
+
+
+@api_view(['DELETE'])
+def delete_teacher_profile(request, teacher: int):
+    try:
+        teacher = CustomUser.objects.get(id=teacher)
+
+        if teacher.id == request.user.id:
+            teacher.delete()
+            return Response({'message': 'Teacher profile successfully deleted!'}, status=status.HTTP_200_OK)
+
+        return Response({'message': 'Not allowed to delete profile'}, status=status.HTTP_400_BAD_REQUEST)
+    except Course.DoesNotExist:
+        return Response({'message': 'Profile not found!'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def enroll_to_course(request, student: int):
+    student = CustomUser.objects.get(id=student)
+
+    if student.id == request.user.id:
+        serializer = EnrollToCourseSerializer(student, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def student_courses(request, student: int):
+    courses = CourseStudent.objects.filter(student_id=student)
+
+    if courses.count()>0:
+        students = CourseStudent.objects.filter(student_id=student).values('course_id')
+        serializer = GetStudentCourses(students)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response({'message': "You do not have courses!"}, status=status.HTTP_404_NOT_FOUND)
 
 
 

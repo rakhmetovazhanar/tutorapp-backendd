@@ -13,7 +13,11 @@ urlpatterns = [
     path('student-profile/', student_profile, name='student-profile'),
     path('teacher-profile/', teacher_profile, name='teacher-profile'),
     path('add-course/', add_course, name='add-course'),
-    path('get-courses/', get_courses, name='get-courses'),
+    path('get-teacher-courses/', get_teacher_courses, name='get-teacher-courses'),
     path('delete-course/<int:course>', delete_course, name='delete-course'),
     path('update-course/<int:course>', update_course, name='update-course'),
+    path('update-teacher-profile/<int:teacher>', update_teacher_profile, name='update-teacher-profile'),
+    path('delete-teacher-profile/<int:teacher>', delete_teacher_profile, name='delete-teacher-profile'),
+    path('enroll-to-course/<int:student>', enroll_to_course, name='enroll-to-course'),
+    path('student-courses/<int:student>', student_courses, name='student-courses')
 ]
