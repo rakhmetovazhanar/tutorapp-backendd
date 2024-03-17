@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from .models import CustomUser, EmailCode, Course, Category, Lesson, CourseStudent
 from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
                           AddCourseSerializer, CourseUpdateSerializer, AddLessonSerializer,
-                          UpdateTeacherProfileSerializer, EnrollToCourseSerializer, GetStudentCourses,
+                          UpdateTeacherProfileSerializer, EnrollToCourseSerializer, GetStudentCoursesSerializer,
                           LoginUserSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
@@ -95,9 +95,6 @@ def login_student(request):
 def logout(request):
     if request.method == 'POST':
         try:
-            '''token_key = request.auth.key
-            token = Token.objects.get(key=token_key)
-            token.delete()'''
             Token.objects.filter(user=request.user).delete()
             return Response({'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
         except Token.DoesNotExist:
@@ -189,6 +186,7 @@ def teacher_profile(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_course(request):
+
     serializer_add_course = AddCourseSerializer(data=request.data)
 
     if serializer_add_course.is_valid():
@@ -197,10 +195,16 @@ def add_course(request):
     return Response(serializer_add_course.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+'''@api_view(['GET'])
+def get_categories(request):
+    categories = Category.objects.get('category_name', 'id')
+    return Response(categories, status=status.HTTP_200_OK)'''
+
+
 @api_view(['GET'])
 def get_teacher_courses(request):
     courses = Course.objects.filter(teacher_id=request.user.id).values(
-        'teacher_id_id', 'name', 'description', 'cost'
+        'id', 'teacher_id_id', 'name', 'description', 'cost'
     )
 
     return Response(courses, status=status.HTTP_200_OK)
@@ -210,7 +214,7 @@ def get_teacher_courses(request):
 def delete_course(request, course: int):
     try:
         course = Course.objects.get(id=course)
-
+        print(course)
         if course.teacher_id_id == request.user.id:
             course.delete()
             return Response({'message': 'Course successfully deleted!'}, status=status.HTTP_200_OK)
@@ -280,15 +284,20 @@ def enroll_to_course(request, student: int):
 
 
 @api_view(['GET'])
-def student_courses(request, student: int):
-    courses = CourseStudent.objects.filter(student_id=student)
+def get_student_courses(request, student: int):
+    courses = CourseStudent.objects.filter(student_id=student).values('course_id')
+    #print(courses)
 
-    if courses.count()>0:
-        students = CourseStudent.objects.filter(student_id=student).values('course_id')
-        serializer = GetStudentCourses(students)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    else:
-        return Response({'message': "You do not have courses!"}, status=status.HTTP_404_NOT_FOUND)
+    if courses:
+        print(courses)
+        serializer = GetStudentCoursesSerializer(courses, data=request.data)
+        if serializer.is_valid():
+            print(serializer.data)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response({'message': "You do not have courses!"}, status=status.HTTP_404_NOT_FOUND)
+
+
 
 
 

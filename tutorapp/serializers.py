@@ -159,22 +159,22 @@ class EnrollToCourseSerializer(serializers.ModelSerializer):
         return course_student
 
 
-class GetStudentCourses(serializers.ModelSerializer):
+class GetStudentCoursesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
 
-    def fields(self, validated_data):
+    '''def get(self,validated_data):
         student_course = Course.objects.get(
-            teacher_id=validated_data.pop('teacher_id'),
+            teacher_id_id=validated_data.pop('teacher_id_id'),
             name=validated_data.pop('name'),
             description=validated_data.pop('description'),
             cost=validated_data.pop('cost'),
             level=validated_data.pop('level'),
             language=validated_data.pop('language'),
-            category_id=validated_data.pop('category_id')
+            category_id_id=validated_data.pop('category_id_id')
         )
-        return student_course
+        return student_course'''
 
 
 
