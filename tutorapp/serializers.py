@@ -74,7 +74,7 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['role', 'first_name', 'last_name', 'username',
-                  'phone_number', 'city', 'experience', 'age']
+                  'phone_number', 'city', 'experience', 'age', 'bio']
 
 
 class UpdateTeacherProfileSerializer(serializers.ModelSerializer):
@@ -90,6 +90,23 @@ class UpdateTeacherProfileSerializer(serializers.ModelSerializer):
         instance.experience= validated_data.pop('experience', instance.experience)
         instance.age = validated_data.pop('age', instance.age)
         instance.bio = validated_data.pop('bio')
+
+        instance.save()
+
+        return instance
+
+
+class UpdateStudentProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'phone_number', 'city', 'age']
+
+    def update(self, instance, validated_data):
+        instance.first_name = validated_data.pop('first_name', instance.first_name)
+        instance.last_name = validated_data.pop('last_name', instance.last_name)
+        instance.phone_number = validated_data.pop('phone_number', instance.phone_number)
+        instance.city = validated_data.pop('city', instance.city)
+        instance.age = validated_data.pop('age', instance.age)
 
         instance.save()
 
