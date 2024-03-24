@@ -175,12 +175,14 @@ def student_profile(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def teacher_profile(request):
-    user = request.user
+def teacher_profile(request, teacher: int):
+    teacher = CustomUser.objects.get(id=teacher)
 
-    profile_info = CustomUser.objects.get(username=user)
-    serializer = TeacherProfileSerializer(profile_info)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    if request.user.id == teacher.id:
+        serializer = TeacherProfileSerializer(teacher)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response({'message': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
@@ -285,17 +287,24 @@ def enroll_to_course(request, student: int):
 
 @api_view(['GET'])
 def get_student_courses(request, student: int):
-    courses = CourseStudent.objects.filter(student_id=student).values('course_id')
-    #print(courses)
+    #if CourseStudent.student_id == student:
+    course_student = Course.objects.filter(id=CourseStudent.course_id).values(id)
 
-    if courses:
-        print(courses)
-        serializer = GetStudentCoursesSerializer(courses, data=request.data)
-        if serializer.is_valid():
-            print(serializer.data)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-    return Response({'message': "You do not have courses!"}, status=status.HTTP_404_NOT_FOUND)
+    serializer = GetStudentCoursesSerializer(course_student)
+    if serializer.is_valid():
+        serializer.get_value()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response({'message': 'You do not have courses yet!'}, status=status.HTTP_400_BAD_REQUEST)
+
+    #print(course_student)
+    #return Response(course_student , status=status.HTTP_200_OK)
+    #return Response({'message': 'You do not have course'}, status=status.HTTP_404_NOT_FOUND)
+
+    #courses = Course.objects.filter(id=student_courses).get('course_id', 'name')
+
+    '''if courses:
+        return Response(courses, status=status.HTTP_200_OK)
+    return Response({'message': "You do not have courses!"}, status=status.HTTP_404_NOT_FOUND)'''
 
 
 
