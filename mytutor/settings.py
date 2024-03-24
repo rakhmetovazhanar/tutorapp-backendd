@@ -6,7 +6,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -29,9 +28,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'tutorapp',
-    'rest_framework',   
+    'rest_framework',
     'rest_framework.authtoken',
-    #'django_rest_passwordreset',
+    # 'django_rest_passwordreset',
 ]
 
 MIDDLEWARE = [
@@ -65,7 +64,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mytutor.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -80,7 +78,7 @@ DATABASES = {
         'NAME': databaseName,
         'USER': databaseUser,
         'PASSWORD': databasePassword,
-        'HOST': databaseHost,    
+        'HOST': databaseHost,
         'PORT': '5432',
     }
 }
@@ -102,7 +100,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -136,14 +133,14 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 
-    'DEFAULT_PERMISSION_CLASSES': [   
-        #'rest_framework.permissions.AllowAny',
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.AllowAny',
     ],
-    
+
 }
 
 AUTHENTICATION_CLASSES = [
-    #'allauth.account.auth_backends.AuthenticationBackend',
+    # 'allauth.account.auth_backends.AuthenticationBackend',
     'rest_framework.authentication.TokenAuthentication',
     'rest_framework_simplejwt.authentication.JWTAuthentication',
 ]
@@ -160,4 +157,4 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = False
+CORS_ALLOW_CREDENTIALS = True
