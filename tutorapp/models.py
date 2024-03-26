@@ -24,6 +24,7 @@ class CustomUser(AbstractUser):
     gender = models.CharField(null=True, blank=False, choices=GENDER_CHOICE)
     phone_number = models.CharField(null=False, blank=False, max_length=25)
     bio = models.CharField(null=True, blank=True, max_length=500)
+    profile_picture = models.ImageField(upload_to='images/', null=True, blank=True)
 
 
 class EmailCode(models.Model):

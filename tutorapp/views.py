@@ -198,12 +198,6 @@ def add_course(request):
     return Response(serializer_add_course.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-'''@api_view(['GET'])
-def get_categories(request):
-    categories = Category.objects.get('category_name', 'id')
-    return Response(categories, status=status.HTTP_200_OK)'''
-
-
 @api_view(['GET'])
 def get_teacher_courses(request):
     courses = Course.objects.filter(teacher_id=request.user.id).values(
@@ -265,7 +259,7 @@ def update_teacher_profile(request, teacher: int):
 def update_student_profile(request, student: int):
     try:
         student = CustomUser.objects.get(id=student)
-
+        print(student)
         if student.id == request.user.id:
             serializer = UpdateStudentProfileSerializer(student, data=request.data)
             if serializer.is_valid():
@@ -323,16 +317,21 @@ def enroll_to_course(request, student: int):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_student_courses(request, student: int):
-    student = CustomUser.objects.get(id=student)
-    student_course = CourseStudent.objects.filter(course_id=Course.id)
-    print(student_course)
+    try:
+        student = CustomUser.objects.get(id=student)
+        print(student.id)
+        courses = CourseStudent.objects.filter(student_id=student.id).values_list('course_id', flat=True)
+        print(courses)
+        student_courses = Course.objects.get(id__in=courses)
+        print(student_courses)
 
-    if student.id == request.user.id:
-        serializer = GetStudentCoursesSerializer(student_course)
-        if serializer.is_valid():
-            serializer.get_value()
+        if student_courses:
+            serializer = GetStudentCoursesSerializer(student_courses, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-    return Response({'message': 'You do not have courses yet!'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'message': 'You do not have enrolled courses yet!'}, status=status.HTTP_400_BAD_REQUEST)
+    except CustomUser.DoesNotExist:
+        return Response({'message': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 

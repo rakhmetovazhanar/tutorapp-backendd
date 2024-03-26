@@ -67,20 +67,20 @@ class EmailUserSerializer(serializers.ModelSerializer):
 class StudentProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['age', 'city', 'first_name', 'phone_number', 'last_name', 'username', 'role']
+        fields = ['age', 'city', 'first_name', 'phone_number', 'last_name', 'username', 'role', 'profile_picture']
 
 
 class TeacherProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['role', 'first_name', 'last_name', 'username',
-                  'phone_number', 'city', 'experience', 'age', 'bio']
+                  'phone_number', 'city', 'experience', 'age', 'bio', 'profile_picture']
 
 
 class UpdateTeacherProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'phone_number', 'city', 'experience', 'age', 'bio']
+        fields = ['first_name', 'last_name', 'phone_number', 'city', 'experience', 'age', 'bio', 'profile_picture']
 
     def update(self, instance, validated_data):
         instance.first_name = validated_data.pop('first_name', instance.first_name)
@@ -89,7 +89,8 @@ class UpdateTeacherProfileSerializer(serializers.ModelSerializer):
         instance.city = validated_data.pop('city', instance.city)
         instance.experience= validated_data.pop('experience', instance.experience)
         instance.age = validated_data.pop('age', instance.age)
-        instance.bio = validated_data.pop('bio')
+        instance.bio = validated_data.pop('bio'),
+        instance.profile_picture = validated_data.pop('profile_picture')
 
         instance.save()
 
@@ -99,14 +100,15 @@ class UpdateTeacherProfileSerializer(serializers.ModelSerializer):
 class UpdateStudentProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'phone_number', 'city', 'age']
+        fields = ['first_name', 'last_name', 'phone_number', 'city', 'age', 'profile_picture']
 
     def update(self, instance, validated_data):
         instance.first_name = validated_data.pop('first_name', instance.first_name)
         instance.last_name = validated_data.pop('last_name', instance.last_name)
         instance.phone_number = validated_data.pop('phone_number', instance.phone_number)
         instance.city = validated_data.pop('city', instance.city)
-        instance.age = validated_data.pop('age', instance.age)
+        instance.age = validated_data.pop('age', instance.age),
+        instance.profile_picture = validated_data.pop('profile_picture')
 
         instance.save()
 
@@ -179,7 +181,6 @@ class EnrollToCourseSerializer(serializers.ModelSerializer):
 class GetStudentCoursesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = '__all__'
-
+        fields = ['name', 'description', 'cost']
 
 
