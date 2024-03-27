@@ -5,6 +5,8 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView
+
 from .models import CustomUser, EmailCode, Course, Category, Lesson, CourseStudent
 from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
                           AddCourseSerializer, CourseUpdateSerializer, AddLessonSerializer,
@@ -12,6 +14,7 @@ from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProf
                           LoginUserSerializer, UpdateStudentProfileSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 @api_view(['POST'])
@@ -189,7 +192,6 @@ def teacher_profile(request, teacher: int):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_course(request):
-
     serializer_add_course = AddCourseSerializer(data=request.data)
 
     if serializer_add_course.is_valid():
@@ -237,21 +239,24 @@ def update_course(request, course: int):
         return Response({'message': 'Course not found!'}, status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['PUT'])
-@permission_classes([IsAuthenticated])
-def update_teacher_profile(request, teacher: int):
-    try:
-        teacher = CustomUser.objects.get(id=teacher)
+class UpdateTeacherProfileViewSet(APIView):
+    parser_classes = (MultiPartParser, FormParser)
 
-        if teacher.id == request.user.id:
-            serializer = UpdateTeacherProfileSerializer(teacher, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+    @api_view(['PUT'])
+    @permission_classes([IsAuthenticated])
+    def update_teacher_profile(self, request, teacher: int):
+        try:
+            teacher = CustomUser.objects.get(id=teacher)
 
-        return Response({'message': 'Not allowed to update teacher profile'}, status=status.HTTP_400_BAD_REQUEST)
-    except CustomUser.DoesNotExist:
-        return Response({'message': 'Profile not found!'}, status=status.HTTP_404_NOT_FOUND)
+            if teacher.id == request.user.id:
+                serializer = UpdateTeacherProfileSerializer(teacher, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            return Response({'message': 'Not allowed to update teacher profile'}, status=status.HTTP_400_BAD_REQUEST)
+        except CustomUser.DoesNotExist:
+            return Response({'message': 'Profile not found!'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['PUT'])
@@ -332,9 +337,3 @@ def get_student_courses(request, student: int):
             return Response({'message': 'You do not have enrolled courses yet!'}, status=status.HTTP_400_BAD_REQUEST)
     except CustomUser.DoesNotExist:
         return Response({'message': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
-
-
-
-

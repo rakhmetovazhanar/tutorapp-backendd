@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'tutorapp',
     'rest_framework',
     'rest_framework.authtoken',
-    # 'django_rest_passwordreset',
+    #'',
 ]
 
 MIDDLEWARE = [
