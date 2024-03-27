@@ -1,7 +1,5 @@
 from rest_framework import serializers
 from .models import CustomUser, EmailCode, Course, Category, Lesson, CourseStudent
-from drf_extra_fields.fields import Base64ImageField
-
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
