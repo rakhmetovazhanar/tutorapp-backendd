@@ -1,5 +1,14 @@
 from rest_framework import serializers
 from .models import CustomUser, EmailCode, Course, Category, Lesson, CourseStudent
+#from drf_extra_fields.fields import Base64ImageField
+import base64
+
+
+def base64_to_image(base64_string):
+    format, imgstr = base64_string.split(';base64,')
+    ext = format.split('/')[-1]
+    return ContentFile(base64.b64decode(imgstr), name=uuid4().hex + "." + ext)
+
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -77,8 +86,6 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
 
 
 class UpdateTeacherProfileSerializer(serializers.ModelSerializer):
-    profile_picture = serializers.ImageField(required=False)
-
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'phone_number', 'city', 'experience', 'age', 'bio', 'profile_picture']

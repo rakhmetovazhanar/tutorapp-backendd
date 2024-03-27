@@ -13,6 +13,7 @@ class CustomUser(AbstractUser):
         ('До 3 лет', 'До 3 лет'),
         ('Нет опыта', 'Нет опыта'),
     )
+
     first_name = models.CharField(max_length=250, blank=False, null=False)
     last_name = models.CharField(max_length=250, blank=False, null=False)
     username = models.EmailField(null=False, blank=False, unique=True)
@@ -24,7 +25,10 @@ class CustomUser(AbstractUser):
     gender = models.CharField(null=True, blank=False, choices=GENDER_CHOICE)
     phone_number = models.CharField(null=False, blank=False, max_length=25)
     bio = models.CharField(null=True, blank=True, max_length=500)
-    profile_picture = models.ImageField(upload_to='images', null=True, blank=True)
+    profile_picture = models.ImageField(null=True, default=None, blank=True)
+
+    def __str__(self):
+        return self.first_name
 
 
 class EmailCode(models.Model):
