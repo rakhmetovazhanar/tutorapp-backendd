@@ -99,7 +99,6 @@ class UpdateTeacherProfileSerializer(serializers.ModelSerializer):
 
 
 class UpdateStudentProfileSerializer(serializers.ModelSerializer):
-    image = Base64ImageField(required=False)
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'phone_number', 'city', 'age', 'profile_picture']
