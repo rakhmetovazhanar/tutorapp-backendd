@@ -107,7 +107,7 @@ class UpdateStudentProfileSerializer(serializers.ModelSerializer):
         instance.last_name = validated_data.pop('last_name', instance.last_name)
         instance.phone_number = validated_data.pop('phone_number', instance.phone_number)
         instance.city = validated_data.pop('city', instance.city)
-        instance.age = validated_data.pop('age', instance.age),
+        instance.age = validated_data.pop('age', instance.age)
         instance.profile_picture = validated_data.pop('profile_picture')
 
         instance.save()

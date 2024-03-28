@@ -386,7 +386,7 @@ def rate_course(request, course: int):
             course_rating = CourseRating.objects.filter(course_id_id=course).create(
                 user_id_id=request.user.id,
                 course_id_id=course,
-                rating=request.data.get['rating'],
+                rating=request.data['rating']
             )
             return Response(course_rating, status=status.HTTP_200_OK)
 
