@@ -26,10 +26,7 @@ class CustomUser(AbstractUser):
     gender = models.CharField(null=True, blank=False, choices=GENDER_CHOICE)
     phone_number = models.CharField(null=False, blank=False, max_length=25)
     bio = models.CharField(null=True, blank=True, max_length=500)
-    profile_picture = models.ImageField(null=True, default=None, blank=True)
-
-    def __str__(self):
-        return self.first_name
+    profile_picture = models.ImageField(null=True, default=None, blank=True, upload_to='profile_pictures/')
 
 
 class EmailCode(models.Model):

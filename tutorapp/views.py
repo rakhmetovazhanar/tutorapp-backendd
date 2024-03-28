@@ -305,7 +305,7 @@ def delete_teacher_profile(request, teacher: int):
 @permission_classes([IsAuthenticated])
 def enroll_to_course(request, student: int):
     student = CustomUser.objects.get(id=student)
-
+    print(student)
     if student.id == request.user.id:
         serializer = EnrollToCourseSerializer(student, data=request.data)
         if serializer.is_valid():

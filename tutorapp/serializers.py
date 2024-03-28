@@ -170,12 +170,11 @@ class AddLessonSerializer(serializers.ModelSerializer):
 class EnrollToCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseStudent
-        fields = ['course_id', 'student_id']
+        fields = ['course_id']
 
     def create(self, validated_data):
         course_student = CourseStudent.objects.create(
-            course=validated_data.pop('course_id'),
-            student=validated_data.pop('student_id')
+            course=validated_data.pop('course_id')
         )
         return course_student
 
