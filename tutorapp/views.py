@@ -5,16 +5,13 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.views import APIView
-
-from .models import CustomUser, EmailCode, Course, Category, Lesson, CourseStudent
+from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent
 from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
                           AddCourseSerializer, CourseUpdateSerializer, AddLessonSerializer,
                           UpdateTeacherProfileSerializer, EnrollToCourseSerializer, GetStudentCoursesSerializer,
-                          LoginUserSerializer, UpdateStudentProfileSerializer)
+                          LoginUserSerializer, UpdateStudentProfileSerializer, RateCourseSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
-from rest_framework.parsers import MultiPartParser, FormParser
 
 
 @api_view(['POST'])
@@ -249,6 +246,7 @@ def update_teacher_profile(request, teacher: int):
             serializer = UpdateTeacherProfileSerializer(teacher, data=request.data)
             if serializer.is_valid():
                 serializer.save()
+                print(serializer.data)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response({'message': 'Not allowed to update teacher profile'}, status=status.HTTP_400_BAD_REQUEST)
@@ -312,6 +310,7 @@ def enroll_to_course(request, student: int):
         serializer = EnrollToCourseSerializer(student, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            print(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -328,9 +327,68 @@ def get_student_courses(request, student: int):
         print(student_courses)
 
         if student_courses:
-            serializer = GetStudentCoursesSerializer(student_courses, many=True)
+            serializer = GetStudentCoursesSerializer(student_courses)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({'message': 'You do not have enrolled courses yet!'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'message': 'You do not have enrolled courses'}, status=status.HTTP_400_BAD_REQUEST)
     except CustomUser.DoesNotExist:
         return Response({'message': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def course_details(request, course: int):
+    course = Course.objects.filter(id=course).values(
+        'id', 'name', 'description', 'category_id_id', 'level', 'cost', 'language', 'teacher_id_id'
+    )
+    return Response(course, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_courses_by_category(request, category: int):
+    courses_list = Course.objects.filter(category_id_id=category).values(
+        'id', 'name', 'description', 'cost'
+    )
+    return Response(courses_list, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def filter_courses_by_category_level_cost(request):
+    category = request.data['category']
+    level = request.data['level']
+    cost = request.data['cost']
+
+    filtered_courses_list = Course.objects.filter(category_id_id=category, level=level, cost=cost).values(
+        'id', 'name', 'description', 'cost')
+    print(filtered_courses_list)
+    return Response(filtered_courses_list, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def search_course(request):
+    course = request.data['course']
+
+    search_result = Course.objects.filter(name__istartswith=course).values('id', 'name', 'description', 'cost')
+
+    if search_result:
+        return Response(search_result, status=status.HTTP_200_OK)
+    else:
+        return Response({'message': 'Not found any courses'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def rate_course(request, course: int):
+    try:
+        course = Course.objects.get(id=course)
+        print(course)
+
+        if course:
+            course_rating = CourseRating.objects.filter(course_id_id=course).create(
+                user_id_id=request.user.id,
+                course_id_id=course,
+                rating=request.data.get['rating'],
+            )
+            return Response(course_rating, status=status.HTTP_200_OK)
+
+    except Course.DoesNotExist:
+        return Response({'message': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)

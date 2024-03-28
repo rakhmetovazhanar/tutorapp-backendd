@@ -1,13 +1,5 @@
 from rest_framework import serializers
 from .models import CustomUser, EmailCode, Course, Category, Lesson, CourseStudent
-#from drf_extra_fields.fields import Base64ImageField
-import base64
-
-
-def base64_to_image(base64_string):
-    format, imgstr = base64_string.split(';base64,')
-    ext = format.split('/')[-1]
-    return ContentFile(base64.b64decode(imgstr), name=uuid4().hex + "." + ext)
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -95,9 +87,9 @@ class UpdateTeacherProfileSerializer(serializers.ModelSerializer):
         instance.last_name = validated_data.pop('last_name', instance.last_name)
         instance.phone_number = validated_data.pop('phone_number', instance.phone_number)
         instance.city = validated_data.pop('city', instance.city)
-        instance.experience= validated_data.pop('experience', instance.experience)
+        instance.experience = validated_data.pop('experience', instance.experience)
         instance.age = validated_data.pop('age', instance.age)
-        instance.bio = validated_data.pop('bio'),
+        instance.bio = validated_data.pop('bio', instance.bio)
         instance.profile_picture = validated_data.pop('profile_picture')
 
         instance.save()
@@ -176,12 +168,12 @@ class AddLessonSerializer(serializers.ModelSerializer):
 class EnrollToCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseStudent
-        fields = ['course', 'student']
+        fields = ['course_id', 'student_id']
 
     def create(self, validated_data):
         course_student = CourseStudent.objects.create(
-            course=validated_data.pop('course'),
-            student=validated_data.pop('student')
+            course=validated_data.pop('course_id'),
+            student=validated_data.pop('student_id')
         )
         return course_student
 
@@ -192,3 +184,14 @@ class GetStudentCoursesSerializer(serializers.ModelSerializer):
         fields = ['name', 'description', 'cost']
 
 
+class RateCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['rating']
+
+    def update(self, instance, validated_data):
+        instance.rating = validated_data.pop('rating')
+
+        instance.save()
+
+        return instance
