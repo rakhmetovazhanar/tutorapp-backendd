@@ -62,6 +62,7 @@ class Course(models.Model):
     description = models.CharField(max_length=250, blank=False, null=False)
     level = models.CharField(max_length=250, blank=False, null=False)
     language = models.CharField(max_length=250, blank=False, null=False)
+    day_time = models.CharField(max_length=250, blank=False, null=False)
     cost = models.IntegerField(blank=False, null=True, default=0)
     avg_rating = models.FloatField(blank=False, null=True, default=0)
 

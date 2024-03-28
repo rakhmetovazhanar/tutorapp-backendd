@@ -118,7 +118,7 @@ class UpdateStudentProfileSerializer(serializers.ModelSerializer):
 class AddCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['teacher_id', 'category_id', 'name', 'description', 'level', 'language', 'cost']
+        fields = ['teacher_id', 'category_id', 'name', 'description', 'level', 'language', 'cost', 'day_time']
 
     def create(self, validated_data):
         course = Course.objects.create(
@@ -129,6 +129,7 @@ class AddCourseSerializer(serializers.ModelSerializer):
             level=validated_data.pop('level'),
             language=validated_data.pop('language'),
             cost=validated_data.pop('cost'),
+            day_time=validated_data.pop('day_time')
         )
         return course
 
@@ -136,7 +137,7 @@ class AddCourseSerializer(serializers.ModelSerializer):
 class CourseUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['category_id', 'name', 'description', 'level', 'language', 'cost']
+        fields = ['category_id', 'name', 'description', 'level', 'language', 'cost', 'day_time']
 
     def update(self, instance, validated_data):
         instance.level = validated_data.pop('level', instance.level)
@@ -144,6 +145,7 @@ class CourseUpdateSerializer(serializers.ModelSerializer):
         instance.description = validated_data.pop('description', instance.description)
         instance.name = validated_data.pop('name', instance.name)
         instance.category_id = validated_data.pop('category_id', instance.category_id)
+        instance.day_time = validated_data.pop('day_time', instance.day_time)
         instance.cost = validated_data['cost']
 
         instance.save()
