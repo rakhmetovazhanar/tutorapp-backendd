@@ -200,7 +200,7 @@ def add_course(request):
 @api_view(['GET'])
 def get_teacher_courses(request):
     courses = Course.objects.filter(teacher_id=request.user.id).values(
-        'id', 'teacher_id_id', 'name', 'description', 'cost'
+        'id', 'teacher_id_id', 'name', 'description', 'cost', 'day_time'
     )
 
     return Response(courses, status=status.HTTP_200_OK)
