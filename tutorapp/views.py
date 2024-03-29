@@ -304,20 +304,15 @@ def delete_teacher_profile(request, teacher: int):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def enroll_to_course(request, course: int):
-    course = Course.objects.get(id=course)
-    print(course)
+    course = Course.objects.get(id=course).id
+    student = request.user.id
 
-    enroll = CourseStudent.objects.create(
-        course_id_id=course,
-        student_id_id=request.user
-    )
-    return Response(enroll)
-    '''serializer = EnrollToCourseSerializer(student, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            print(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)'''
+    serializer = EnrollToCourseSerializer(data={'course_id': course, 'student_id': student},
+                                          context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
@@ -325,11 +320,8 @@ def enroll_to_course(request, course: int):
 def get_student_courses(request, student: int):
     try:
         student = CustomUser.objects.get(id=student)
-        print(student.id)
         courses = CourseStudent.objects.filter(student_id=student.id).values_list('course_id', flat=True)
-        print(courses)
         student_courses = Course.objects.get(id__in=courses)
-        print(student_courses)
 
         if student_courses:
             serializer = GetStudentCoursesSerializer(student_courses)
@@ -348,10 +340,23 @@ def course_details(request, course: int):
     return Response(course, status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
+'''@api_view(['GET'])
 def get_courses_by_category(request, category: int):
     courses_list = Course.objects.filter(category_id_id=category).values(
         'id', 'name', 'description', 'cost'
+    )
+    return Response(courses_list, status=status.HTTP_200_OK)'''
+
+
+@api_view(['GET'])
+def get_courses_by_category(request):
+    category = request.data.get('category')
+
+    category_name = Category.objects.get(category_name=category).id
+    print(category_name)
+
+    courses_list = Course.objects.filter(category_id_id=category_name).values(
+        'id', 'name', 'description', 'cost', 'category_id'
     )
     return Response(courses_list, status=status.HTTP_200_OK)
 
@@ -384,48 +389,22 @@ def search_and_filter(request):
         return Response({'message': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-'''@api_view(['GET'])
-def filter_courses_by_category_level_cost(request):
-    category = request.data['category']
-    level = request.data['level']
-    min_cost = int(request.data['min_cost'])
-    max_cost = int(request.data['max_cost'])
-
-    filtered_courses_list = Course.objects.filter(category_id_id=category, level=level, cost__gte=min_cost,
-                                                  cost__lte=max_cost).values('id', 'name', 'description', 'cost')
-
-    if filtered_courses_list:
-        return Response(filtered_courses_list, status=status.HTTP_200_OK)
-    else:
-        return Response({'message': 'No result'}, status=status.HTTP_404_NOT_FOUND)'''
-
-
-'''@api_view(['GET'])
-def search_course(request):
-    course = request.data['course']
-
-    search_result = Course.objects.filter(name__istartswith=course).values('id', 'name', 'description', 'cost')
-
-    if search_result:
-        return Response(search_result, status=status.HTTP_200_OK)
-    else:
-        return Response({'message': 'Not found any courses'}, status=status.HTTP_404_NOT_FOUND)'''
-
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def rate_course(request, course: int):
+    rating = request.data.get('rating')
+    user = request.user.id
+
     try:
-        course = Course.objects.get(id=course)
+        course = Course.objects.get(id=course).id
         print(course)
 
         if course:
-            course_rating = CourseRating.objects.filter(course_id_id=course).create(
-                user_id_id=request.user.id,
-                course_id_id=course,
-                rating=request.data['rating']
-            )
-            return Response(course_rating, status=status.HTTP_200_OK)
+            serializer = RateCourseSerializer(data={'rating': rating, 'course_id': course, 'user_id': user},
+                                              context={'request': request})
+            if serializer.is_valid():
+                serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
     except Course.DoesNotExist:
         return Response({'message': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)

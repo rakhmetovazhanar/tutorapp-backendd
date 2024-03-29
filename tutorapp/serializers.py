@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, EmailCode, Course, Category, Lesson, CourseStudent
+from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -156,29 +156,16 @@ class CourseUpdateSerializer(serializers.ModelSerializer):
 class EnrollToCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseStudent
-        fields = ['course_id']
-
-    def create(self, validated_data):
-        course_student = CourseStudent.objects.create(
-            course=validated_data.pop('course_id')
-        )
-        return course_student
+        fields = ['course_id', 'student_id']
 
 
 class GetStudentCoursesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['name', 'description', 'cost']
+        fields = ['id', 'name', 'description', 'cost', 'day_time']
 
 
 class RateCourseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Course
-        fields = ['rating']
-
-    def update(self, instance, validated_data):
-        instance.rating = validated_data.pop('rating')
-
-        instance.save()
-
-        return instance
+        model = CourseRating
+        fields = ['rating', 'course_id', 'user_id']

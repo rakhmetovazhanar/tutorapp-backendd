@@ -53,15 +53,25 @@ class Category(models.Model):
 
 
 class Course(models.Model):
+    LEVEL_CHOICE = (
+        ('Легкий', 'Легкий'),
+        ('Средний', 'Средний'),
+        ('Сложный', 'Сложный'),
+    )
+    LANGUAGE_CHOICE = (
+        ('Казахский', 'Казахский'),
+        ('Русский', 'Русский'),
+        ('Английский', 'Английский'),
+    )
     teacher_id = models.ForeignKey(CustomUser, max_length=25, blank=False, null=False, on_delete=models.CASCADE)
     category_id = models.ForeignKey(Category, max_length=250, blank=False, null=False, on_delete=models.CASCADE)
     name = models.CharField(max_length=250, blank=False, null=False)
     description = models.CharField(max_length=250, blank=False, null=False)
-    level = models.CharField(max_length=250, blank=False, null=False)
-    language = models.CharField(max_length=250, blank=False, null=False)
+    level = models.CharField(max_length=250, blank=False, null=False, choices=LEVEL_CHOICE)
+    language = models.CharField(max_length=250, blank=False, null=False, choices=LANGUAGE_CHOICE)
     day_time = models.CharField(max_length=250, blank=False, null=False)
     cost = models.IntegerField(blank=False, null=True, default=0)
-    avg_rating = models.FloatField(blank=False, null=True, default=0)
+    avg_rating = models.FloatField(blank=False, null=True, default=None)
 
     def average_rating(self) -> float:
         return CourseRating.objects.filter(course_id=self).aggregate(Avg('rating'))['rating__avg'] or 0
