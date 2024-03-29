@@ -369,7 +369,7 @@ def search_and_filter(request):
     min_cost = request.data.get('min_cost')
     max_cost = request.data.get('max_cost')
 
-    courses = Course.objects.values('id', 'name', 'description', 'cost')
+    courses = Course.objects.values('id', 'name', 'description', 'cost', 'day_time')
 
     if course:
         courses = courses.filter(name__istartswith=course)
