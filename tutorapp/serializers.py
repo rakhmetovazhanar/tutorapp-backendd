@@ -153,20 +153,6 @@ class CourseUpdateSerializer(serializers.ModelSerializer):
         return instance
 
 
-class AddLessonSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Lesson
-        fields = ['course_id', 'start_date_time', 'end_date_time']
-
-    def create(self, validated_data):
-        lesson = Lesson.objects.create(
-            course_id=validated_data.pop('course_id'),
-            start_date_time=validated_data.pop('start_date_time'),
-            end_date_time=validated_data.pop('end_date_time')
-        )
-        return lesson
-
-
 class EnrollToCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseStudent

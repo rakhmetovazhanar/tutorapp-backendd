@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent
 from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
-                          AddCourseSerializer, CourseUpdateSerializer, AddLessonSerializer,
+                          AddCourseSerializer, CourseUpdateSerializer,
                           UpdateTeacherProfileSerializer, EnrollToCourseSerializer, GetStudentCoursesSerializer,
                           LoginUserSerializer, UpdateStudentProfileSerializer, RateCourseSerializer)
 from rest_framework.permissions import IsAuthenticated
@@ -200,7 +200,7 @@ def add_course(request):
 @api_view(['GET'])
 def get_teacher_courses(request):
     courses = Course.objects.filter(teacher_id=request.user.id).values(
-        'id', 'teacher_id_id', 'name', 'description', 'cost', 'day_time'
+        'id', 'teacher_id_id', 'name', 'description', 'cost', 'day_time', 'level', 'category_id', 'language'
     )
 
     return Response(courses, status=status.HTTP_200_OK)
@@ -303,16 +303,21 @@ def delete_teacher_profile(request, teacher: int):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def enroll_to_course(request, student: int):
-    student = CustomUser.objects.get(id=student)
-    print(student)
-    if student.id == request.user.id:
-        serializer = EnrollToCourseSerializer(student, data=request.data)
+def enroll_to_course(request, course: int):
+    course = Course.objects.get(id=course)
+    print(course)
+
+    enroll = CourseStudent.objects.create(
+        course_id_id=course,
+        student_id_id=request.user
+    )
+    return Response(enroll)
+    '''serializer = EnrollToCourseSerializer(student, data=request.data)
         if serializer.is_valid():
             serializer.save()
             print(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)'''
 
 
 @api_view(['GET'])
