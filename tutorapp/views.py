@@ -361,7 +361,7 @@ def get_courses_by_category(request):
     return Response(courses_list, status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def search_and_filter(request):
     course = request.data.get('course')
     category = request.data.get('category')
