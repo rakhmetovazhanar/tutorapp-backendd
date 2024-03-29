@@ -357,19 +357,50 @@ def get_courses_by_category(request, category: int):
 
 
 @api_view(['GET'])
+def search_and_filter(request):
+    course = request.data.get('course')
+    category = request.data.get('category')
+    level = request.data.get('level')
+    min_cost = request.data.get('min_cost')
+    max_cost = request.data.get('max_cost')
+
+    courses = Course.objects.values('id', 'name', 'description', 'cost')
+
+    if course:
+        courses = courses.filter(name__istartswith=course)
+
+    if category:
+        courses = courses.filter(category_id_id=category)
+
+    if level:
+        courses = courses.filter(level=level)
+
+    if min_cost and max_cost:
+        courses = courses.filter(cost__gte=min_cost, cost__lte=max_cost)
+
+    if courses:
+        return Response(courses, status=status.HTTP_200_OK)
+    else:
+        return Response({'message': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+'''@api_view(['GET'])
 def filter_courses_by_category_level_cost(request):
     category = request.data['category']
     level = request.data['level']
-    cost = request.data['cost']
+    min_cost = int(request.data['min_cost'])
+    max_cost = int(request.data['max_cost'])
 
-    filtered_courses_list = Course.objects.filter(category_id_id=category, level=level, cost=cost).values(
-        'id', 'name', 'description', 'cost')
-    print(filtered_courses_list)
-    return Response(filtered_courses_list, status=status.HTTP_200_OK)
+    filtered_courses_list = Course.objects.filter(category_id_id=category, level=level, cost__gte=min_cost,
+                                                  cost__lte=max_cost).values('id', 'name', 'description', 'cost')
+
+    if filtered_courses_list:
+        return Response(filtered_courses_list, status=status.HTTP_200_OK)
+    else:
+        return Response({'message': 'No result'}, status=status.HTTP_404_NOT_FOUND)'''
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
+'''@api_view(['GET'])
 def search_course(request):
     course = request.data['course']
 
@@ -378,10 +409,11 @@ def search_course(request):
     if search_result:
         return Response(search_result, status=status.HTTP_200_OK)
     else:
-        return Response({'message': 'Not found any courses'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'message': 'Not found any courses'}, status=status.HTTP_404_NOT_FOUND)'''
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def rate_course(request, course: int):
     try:
         course = Course.objects.get(id=course)
