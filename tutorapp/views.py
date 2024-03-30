@@ -305,18 +305,24 @@ def delete_teacher_profile(request, teacher: int):
 @permission_classes([IsAuthenticated])
 def enroll_to_course(request, course: int):
     course = Course.objects.get(id=course).id
+    print(course)
     student = request.user.id
 
-    serializer = EnrollToCourseSerializer(data={'course_id': course, 'student_id': student},
-                                          context={'request': request})
-    course_exist = CourseRating.objects.get(student_id_id=request.user.id).values('course_id_id')
-    if course_exist:
-        return Response({'message': 'You are already enrolled to this course'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        courses = CourseStudent.objects.filter(student_id_id=request.user.id).values_list('course_id_id')
+        print(courses)
 
-    if serializer.is_valid() and not course_exist:
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if course in courses:
+            return Response({'message': 'You are already enrolled to this course!'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = EnrollToCourseSerializer(data={'course_id': course, 'student_id': student},
+                                                  context={'request': request})
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except CourseStudent.DoesNotExist:
+        return Response({'message': 'You are not found!'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -325,7 +331,10 @@ def get_student_courses(request, student: int):
     try:
         student = CustomUser.objects.get(id=student)
         courses = CourseStudent.objects.filter(student_id=student.id).values_list('course_id', flat=True)
-        student_courses = Course.objects.get(id__in=courses)
+        try:
+            student_courses = Course.objects.get(id__in=courses)
+        except Course.DoesNotExist:
+            return Response({'message': 'No such course in your course list'}, status=status.HTTP_404_NOT_FOUND)
 
         if student_courses:
             serializer = GetStudentCoursesSerializer(student_courses)
@@ -339,7 +348,7 @@ def get_student_courses(request, student: int):
 @api_view(['GET'])
 def course_details(request, course: int):
     course = Course.objects.filter(id=course).values(
-        'id', 'name', 'description', 'category_id_id', 'level', 'cost', 'language', 'teacher_id_id'
+        'id', 'name', 'description', 'category_id_id', 'level', 'cost', 'language', 'teacher_id_id', 'day_time'
     )
     return Response(course, status=status.HTTP_200_OK)
 
