@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Avg
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class CustomUser(AbstractUser):
@@ -73,9 +75,6 @@ class Course(models.Model):
     cost = models.IntegerField(blank=False, null=True, default=0)
     avg_rating = models.FloatField(blank=False, null=True, default=None)
 
-    def average_rating(self) -> float:
-        return CourseRating.objects.filter(course_id=self).aggregate(Avg('rating'))['rating__avg'] or 0
-
 
 class CourseRating(models.Model):
     RATING_CHOICE = (
@@ -89,8 +88,16 @@ class CourseRating(models.Model):
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     rating = models.IntegerField(default=0, choices=RATING_CHOICE)
 
-    def __str__(self):
-        return f"{self.course_id.avg_rating}: {self.rating}"
+
+@receiver(post_save, sender=CourseRating)
+def course_avr_rating(sender, instance, **kwargs):
+    course = instance.course_id
+    ratings_count = CourseRating.objects.filter(course_id=course).count()
+    if ratings_count >= 1:
+        avg_rating = CourseRating.objects.filter(course_id=course).aggregate(Avg('rating'))['rating__avg']
+        avg_rating = round(avg_rating, 1)
+        course.avg_rating = avg_rating
+        course.save()
 
 
 class Lesson(models.Model):

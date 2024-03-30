@@ -309,7 +309,11 @@ def enroll_to_course(request, course: int):
 
     serializer = EnrollToCourseSerializer(data={'course_id': course, 'student_id': student},
                                           context={'request': request})
-    if serializer.is_valid():
+    course_exist = CourseRating.objects.get(student_id_id=request.user.id).values('course_id_id')
+    if course_exist:
+        return Response({'message': 'You are already enrolled to this course'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if serializer.is_valid() and not course_exist:
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -340,15 +344,15 @@ def course_details(request, course: int):
     return Response(course, status=status.HTTP_200_OK)
 
 
-'''@api_view(['GET'])
+@api_view(['GET'])
 def get_courses_by_category(request, category: int):
     courses_list = Course.objects.filter(category_id_id=category).values(
         'id', 'name', 'description', 'cost'
     )
-    return Response(courses_list, status=status.HTTP_200_OK)'''
+    return Response(courses_list, status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
+'''@api_view(['GET'])
 def get_courses_by_category(request):
     category = request.data.get('category')
 
@@ -358,7 +362,7 @@ def get_courses_by_category(request):
     courses_list = Course.objects.filter(category_id_id=category_name).values(
         'id', 'name', 'description', 'cost', 'category_id'
     )
-    return Response(courses_list, status=status.HTTP_200_OK)
+    return Response(courses_list, status=status.HTTP_200_OK)'''
 
 
 @api_view(['POST'])
@@ -395,16 +399,20 @@ def rate_course(request, course: int):
     rating = request.data.get('rating')
     user = request.user.id
 
+    existing_rating = CourseRating.objects.filter(user_id=request.user.id, course_id=course).first()
+
     try:
         course = Course.objects.get(id=course).id
-        print(course)
 
-        if course:
+        course_rating = Course.objects.filter(id=course).values('avg_rating')
+        if course and not existing_rating:
             serializer = RateCourseSerializer(data={'rating': rating, 'course_id': course, 'user_id': user},
                                               context={'request': request})
             if serializer.is_valid():
                 serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(course_rating, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'You are already rated this course'}, status=status.HTTP_400_BAD_REQUEST)
 
     except Course.DoesNotExist:
         return Response({'message': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
