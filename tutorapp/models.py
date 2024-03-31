@@ -68,7 +68,7 @@ class Course(models.Model):
     teacher_id = models.ForeignKey(CustomUser, max_length=25, blank=False, null=False, on_delete=models.CASCADE)
     category_id = models.ForeignKey(Category, max_length=250, blank=False, null=False, on_delete=models.CASCADE)
     name = models.CharField(max_length=250, blank=False, null=False)
-    description = models.CharField(max_length=250, blank=False, null=False)
+    description = models.CharField(max_length=1000, blank=False, null=False)
     level = models.CharField(max_length=250, blank=False, null=False, choices=LEVEL_CHOICE)
     language = models.CharField(max_length=250, blank=False, null=False, choices=LANGUAGE_CHOICE)
     day_time = models.CharField(max_length=250, blank=False, null=False)
