@@ -331,9 +331,14 @@ def get_student_courses(request, student: int):
             student_courses = Course.objects.filter(id__in=courses)
             serializer = GetStudentCoursesSerializer(student_courses, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'You are not enrolled to this course'}, status=status.HTTP_404_NOT_FOUND)
 
-    except (CourseStudent.DoesNotExist, Course.DoesNotExist):
-        return Response({'message': 'You do not have any enrolled courses!'}, status=status.HTTP_404_NOT_FOUND)
+    except CourseStudent.DoesNotExist:
+        return Response({'message': 'No courses found for student!'}, status=status.HTTP_404_NOT_FOUND)
+    except Course.DoesNotExist:
+        return Response({'message': 'No match courses!'},
+                        status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
