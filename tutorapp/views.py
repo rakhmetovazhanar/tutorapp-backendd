@@ -346,16 +346,29 @@ def get_student_courses(request, student: int):
 
 @api_view(['GET'])
 def course_details(request, course: int):
-    course = Course.objects.filter(id=course).values(
-        'id', 'name', 'description', 'category_id_id', 'level', 'cost', 'language', 'teacher_id_id', 'day_time'
-    )
-    return Response(course, status=status.HTTP_200_OK)
+    course = Course.objects.get(id=course)
+    teacher_info = CustomUser.objects.values('first_name', 'last_name').get(id=course.teacher_id_id)
+
+    course_info = {
+        'id': course.id,
+        'name': course.name,
+        'description': course.description,
+        'category_id_id': course.category_id_id,
+        'level': course.level,
+        'cost': course.cost,
+        'language': course.language,
+        'teacher_id_id': course.teacher_id_id,
+        'first_name': teacher_info['first_name'],
+        'last_name': teacher_info['last_name'],
+        'day_time': course.day_time
+    }
+    return Response(course_info, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
 def get_courses_by_category(request, category: int):
     courses_list = Course.objects.filter(category_id_id=category).values(
-        'id', 'name', 'description', 'cost'
+        'id', 'name', 'description', 'cost', 'day_time'
     )
     return Response(courses_list, status=status.HTTP_200_OK)
 
