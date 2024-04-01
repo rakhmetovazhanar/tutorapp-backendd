@@ -224,13 +224,15 @@ def delete_course(request, course: int):
 def update_course(request, course: int):
     try:
         course = Course.objects.get(id=course)
-
+        print(course)
+        print(request.user.id)
+        print(course.teacher_id_id == request.user.id)
         if course.teacher_id_id == request.user.id:
             serializer = CourseUpdateSerializer(course, data=request.data)
+            print(serializer.is_valid())
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
-
         return Response({'message': 'Not allowed to update course'}, status=status.HTTP_400_BAD_REQUEST)
     except Course.DoesNotExist:
         return Response({'message': 'Course not found!'}, status=status.HTTP_404_NOT_FOUND)
