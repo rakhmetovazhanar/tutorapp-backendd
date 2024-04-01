@@ -28,4 +28,5 @@ urlpatterns = [
     #path('search-course/', search_course, name='search-course'),
     path('search-and-filter/', search_and_filter, name='search-and-filter'),
     path('rate-course/<int:course>', rate_course, name='rate-course'),
+    path('teacher_clients/<int:teacher>', get_teacher_clients, name='teacher_clients'),
 ]

@@ -307,11 +307,13 @@ def delete_teacher_profile(request, teacher: int):
 @permission_classes([IsAuthenticated])
 def enroll_to_course(request, course: int):
     course = Course.objects.get(id=course)
+    print(course)
     student = request.user.id
 
-    courses = CourseStudent.objects.filter(student_id_id=student).values_list('course_id_id', flat=True).exists()
+    enrolled_course = CourseStudent.objects.filter(student_id_id=student, course_id_id=course)
+    print(enrolled_course)
 
-    if courses:
+    if enrolled_course:
         return Response({'message': 'You are already enrolled to this course'}, status=status.HTTP_400_BAD_REQUEST)
     else:
         serializer = EnrollToCourseSerializer(data={'course_id': course.id, 'student_id': student},
@@ -327,7 +329,6 @@ def enroll_to_course(request, course: int):
 def get_student_courses(request, student: int):
     try:
         courses = CourseStudent.objects.filter(student_id_id=student).values_list('course_id_id', flat=True)
-        print(courses)
 
         if courses:
             student_courses = Course.objects.filter(id__in=courses)
@@ -357,19 +358,6 @@ def get_courses_by_category(request, category: int):
         'id', 'name', 'description', 'cost'
     )
     return Response(courses_list, status=status.HTTP_200_OK)
-
-
-'''@api_view(['GET'])
-def get_courses_by_category(request):
-    category = request.data.get('category')
-
-    category_name = Category.objects.get(category_name=category).id
-    print(category_name)
-
-    courses_list = Course.objects.filter(category_id_id=category_name).values(
-        'id', 'name', 'description', 'cost', 'category_id'
-    )
-    return Response(courses_list, status=status.HTTP_200_OK)'''
 
 
 @api_view(['POST'])
@@ -423,3 +411,20 @@ def rate_course(request, course: int):
 
     except Course.DoesNotExist:
         return Response({'message': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_teacher_clients(request, teacher: int):
+    try:
+        course = Course.objects.filter(teacher_id_id=teacher).values_list('id', flat=True)
+        print(course)
+
+        if course:
+            student_list = CourseStudent.objects.filter(course_id__in=course).values_list('student_id_id', flat=True)
+            if student_list:
+                return Response(student_list, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'You do not have any clients'}, status=status.HTTP_404_NOT_FOUND)
+    except Course.DoesNotExist:
+        return Response({'message': 'Not found any courses for request teacher'}, status=status.HTTP_404_NOT_FOUND)
