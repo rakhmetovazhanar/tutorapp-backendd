@@ -169,3 +169,9 @@ class RateCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseRating
         fields = ['rating', 'course_id', 'user_id']
+
+
+class ClientsInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'first_name', 'last_name', 'age', 'city', 'phone_number']

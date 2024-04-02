@@ -9,7 +9,7 @@ from .models import CustomUser, EmailCode, Course, Category, CourseRating, Cours
 from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
                           AddCourseSerializer, CourseUpdateSerializer,
                           UpdateTeacherProfileSerializer, EnrollToCourseSerializer, GetStudentCoursesSerializer,
-                          LoginUserSerializer, UpdateStudentProfileSerializer, RateCourseSerializer)
+                          LoginUserSerializer, UpdateStudentProfileSerializer, RateCourseSerializer, ClientsInfoSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
 
@@ -220,6 +220,18 @@ def delete_course(request, course: int):
         return Response({'message': 'Course not found!'}, status=status.HTTP_404_NOT_FOUND)
 
 
+@api_view(['DELETE'])
+def delete_student_course(request, course: int):
+    try:
+        course = CourseStudent.objects.get(course_id_id=course, student_id_id=request.user.id)
+        if course:
+            course.delete()
+            return Response({'message': 'Course successfully deleted!'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Not allowed to delete course'}, status=status.HTTP_400_BAD_REQUEST)
+    except CourseStudent.DoesNotExist:
+        return Response({'message': 'Course not found!'}, status=status.HTTP_404_NOT_FOUND)
+
+
 @api_view(['PUT'])
 def update_course(request, course: int):
     try:
@@ -348,7 +360,6 @@ def get_student_courses(request, student: int):
 def course_details(request, course: int):
     course = Course.objects.get(id=course)
     teacher_info = CustomUser.objects.values('first_name', 'last_name').get(id=course.teacher_id_id)
-
     course_info = {
         'id': course.id,
         'name': course.name,
@@ -431,12 +442,14 @@ def rate_course(request, course: int):
 def get_teacher_clients(request, teacher: int):
     try:
         course = Course.objects.filter(teacher_id_id=teacher).values_list('id', flat=True)
-        print(course)
 
         if course:
-            student_list = CourseStudent.objects.filter(course_id__in=course).values_list('student_id_id', flat=True)
+            student_list = (CourseStudent.objects.filter(course_id_id__in=course)
+                            .values_list('student_id_id', flat=True).distinct())
             if student_list:
-                return Response(student_list, status=status.HTTP_200_OK)
+                student = CustomUser.objects.filter(id__in=student_list)
+                serializer = ClientsInfoSerializer(student, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response({'message': 'You do not have any clients'}, status=status.HTTP_404_NOT_FOUND)
     except Course.DoesNotExist:
