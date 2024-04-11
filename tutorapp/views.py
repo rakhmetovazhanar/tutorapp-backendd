@@ -383,7 +383,7 @@ def course_details(request, course: int):
 @api_view(['GET'])
 def get_courses_by_category(request, category: int):
     courses_list = Course.objects.filter(category_id_id=category).values(
-        'id', 'name', 'description', 'cost', 'day_time'
+        'id', 'name', 'description', 'cost', 'day_time', 'avg_rating'
     )
     return Response(courses_list, status=status.HTTP_200_OK)
 
