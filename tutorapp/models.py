@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Avg
@@ -74,6 +76,13 @@ class Course(models.Model):
     day_time = models.CharField(max_length=250, blank=False, null=False)
     cost = models.IntegerField(blank=False, null=True, default=0)
     avg_rating = models.FloatField(blank=False, null=True, default=None)
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    comment = models.CharField(max_length=1000, blank=False, null=False)
+    created = models.DateField(auto_now_add=True)
 
 
 class CourseRating(models.Model):

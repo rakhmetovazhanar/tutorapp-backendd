@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent
+from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent, Comment
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -171,7 +171,20 @@ class RateCourseSerializer(serializers.ModelSerializer):
         fields = ['rating', 'course_id', 'user_id']
 
 
+class StudentCoursesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['id', 'name']
+
+
 class ClientsInfoSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = CustomUser
-        fields = ['id', 'first_name', 'last_name', 'age', 'city', 'phone_number']
+        fields = ['id', 'first_name', 'last_name', 'username', 'phone_number']
+
+
+class CommentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['user', 'course', 'comment']

@@ -5,11 +5,13 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent
+from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent, Comment
 from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
                           AddCourseSerializer, CourseUpdateSerializer,
                           UpdateTeacherProfileSerializer, EnrollToCourseSerializer, GetStudentCoursesSerializer,
-                          LoginUserSerializer, UpdateStudentProfileSerializer, RateCourseSerializer, ClientsInfoSerializer)
+                          LoginUserSerializer, UpdateStudentProfileSerializer, RateCourseSerializer,
+                          ClientsInfoSerializer,
+                          StudentCoursesSerializer, CommentsSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
 
@@ -441,16 +443,63 @@ def rate_course(request, course: int):
 @permission_classes([IsAuthenticated])
 def get_teacher_clients(request, teacher: int):
     try:
-        course = Course.objects.filter(teacher_id_id=teacher).values_list('id', flat=True)
-
-        if course:
-            student_list = (CourseStudent.objects.filter(course_id_id__in=course)
-                            .values_list('student_id_id', flat=True).distinct())
-            if student_list:
-                student = CustomUser.objects.filter(id__in=student_list)
-                serializer = ClientsInfoSerializer(student, many=True)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response({'message': 'You do not have any clients'}, status=status.HTTP_404_NOT_FOUND)
+        courses = Course.objects.filter(teacher_id_id=teacher)
+        print(courses)
+        student_list = (CourseStudent.objects.filter(course_id_id__in=courses)
+                        .values_list('student_id_id', flat=True).distinct())
+        print(student_list)
+        if student_list:
+            students = CustomUser.objects.filter(id__in=student_list)
+            print(students)
+            student_serializer = ClientsInfoSerializer(students, many=True)
+            return Response(student_serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'You do not have any clients'}, status=status.HTTP_404_NOT_FOUND)
     except Course.DoesNotExist:
         return Response({'message': 'Not found any courses for request teacher'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_courses(request, student: int):
+    try:
+        courses = CourseStudent.objects.filter(student_id_id=student).values_list('course_id_id', flat=True)
+        print(courses)
+
+        course_name = Course.objects.filter(id__in=courses).values('id', 'name')
+        print(course_name)
+
+        serializer = StudentCoursesSerializer(course_name, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Course.DoesNotExist:
+        return Response({'message': 'You do not have any courses'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_comment(request, course: int):
+    user = request.user.id
+
+    serializer = CommentsSerializer(data={'user': user, 'course': course, 'comment': request.data['comment']})
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response({'message': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_comments(request, course: int):
+    comments = Comment.objects.values('user_id', 'comment', 'created').get(course_id=course)
+
+    if comments:
+        comment_list = {
+            'user': comments['user_id'],
+            'comment': comments['comment'],
+            'created': comments['created']
+        }
+        return Response(comment_list, status=status.HTTP_200_OK)
+    else:
+        return Response({'message': 'No comments in this course'}, status=status.HTTP_404_NOT_FOUND)
