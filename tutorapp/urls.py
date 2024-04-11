@@ -33,4 +33,5 @@ urlpatterns = [
     path('course-delete/<int:course>', delete_student_course, name='course-delete'),
     path('comment/<int:course>', add_comment, name='comment'),
     path('comments/<int:course>', get_comments, name='comments'),
+    path('delete-client/<int:student>', delete_client, name='delete-client'),
 ]

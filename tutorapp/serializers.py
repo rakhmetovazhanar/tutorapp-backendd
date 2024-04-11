@@ -162,7 +162,7 @@ class EnrollToCourseSerializer(serializers.ModelSerializer):
 class GetStudentCoursesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['id', 'name', 'description', 'cost', 'day_time']
+        fields = ['id', 'name', 'description', 'cost', 'day_time', 'avg_rating']
 
 
 class RateCourseSerializer(serializers.ModelSerializer):

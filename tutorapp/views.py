@@ -202,7 +202,8 @@ def add_course(request):
 @api_view(['GET'])
 def get_teacher_courses(request):
     courses = Course.objects.filter(teacher_id=request.user.id).values(
-        'id', 'teacher_id_id', 'name', 'description', 'cost', 'day_time', 'level', 'category_id', 'language'
+        'id', 'teacher_id_id', 'name', 'description', 'cost', 'day_time', 'level', 'category_id', 'language',
+        'avg_rating'
     )
 
     return Response(courses, status=status.HTTP_200_OK)
@@ -373,7 +374,8 @@ def course_details(request, course: int):
         'teacher_id_id': course.teacher_id_id,
         'first_name': teacher_info['first_name'],
         'last_name': teacher_info['last_name'],
-        'day_time': course.day_time
+        'day_time': course.day_time,
+        'average_rating': course.avg_rating
     }
     return Response(course_info, status=status.HTTP_200_OK)
 
@@ -474,6 +476,18 @@ def student_courses(request, student: int):
 
     except Course.DoesNotExist:
         return Response({'message': 'You do not have any courses'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_client(request, student: int):
+    student = CourseStudent.objects.get(student_id_id=student)
+
+    if student:
+        student.delete()
+        return Response({'message': 'Student successfully deleted'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'message': 'Student is not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
