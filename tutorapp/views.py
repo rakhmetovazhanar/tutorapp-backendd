@@ -443,17 +443,13 @@ def rate_course(request, course: int):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_teacher_clients(request, teacher: int):
+def get_teacher_clients(request, course: int):
     try:
-        courses = Course.objects.filter(teacher_id_id=teacher)
-        print(courses)
-        student_list = (CourseStudent.objects.filter(course_id_id__in=courses)
-                        .values_list('student_id_id', flat=True).distinct())
-        print(student_list)
-        if student_list:
-            students = CustomUser.objects.filter(id__in=student_list)
-            print(students)
-            student_serializer = ClientsInfoSerializer(students, many=True)
+        students_list = CourseStudent.objects.filter(course_id_id=course).values_list('student_id_id', flat=True)
+
+        if students_list:
+            students_info = CustomUser.objects.filter(id__in=students_list)
+            student_serializer = ClientsInfoSerializer(students_info, many=True)
             return Response(student_serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'You do not have any clients'}, status=status.HTTP_404_NOT_FOUND)
@@ -461,7 +457,7 @@ def get_teacher_clients(request, teacher: int):
         return Response({'message': 'Not found any courses for request teacher'}, status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['GET'])
+'''@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def student_courses(request, student: int):
     try:
@@ -475,13 +471,14 @@ def student_courses(request, student: int):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     except Course.DoesNotExist:
-        return Response({'message': 'You do not have any courses'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'message': 'You do not have any courses'}, status=status.HTTP_404_NOT_FOUND)'''
 
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_client(request, student: int):
-    student = CourseStudent.objects.get(student_id_id=student)
+    course = request.data.get('course_id')
+    student = CourseStudent.objects.filter(student_id_id=student, course_id_id=course)
 
     if student:
         student.delete()
@@ -517,3 +514,4 @@ def get_comments(request, course: int):
         return Response(comment_list, status=status.HTTP_200_OK)
     else:
         return Response({'message': 'No comments in this course'}, status=status.HTTP_404_NOT_FOUND)
+
