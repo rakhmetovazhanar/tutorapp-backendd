@@ -213,7 +213,6 @@ def get_teacher_courses(request):
 def delete_course(request, course: int):
     try:
         course = Course.objects.get(id=course)
-        print(course)
         if course.teacher_id_id == request.user.id:
             course.delete()
             return Response({'message': 'Course successfully deleted!'}, status=status.HTTP_200_OK)
@@ -239,12 +238,8 @@ def delete_student_course(request, course: int):
 def update_course(request, course: int):
     try:
         course = Course.objects.get(id=course)
-        print(course)
-        print(request.user.id)
-        print(course.teacher_id_id == request.user.id)
         if course.teacher_id_id == request.user.id:
             serializer = CourseUpdateSerializer(course, data=request.data)
-            print(serializer.is_valid())
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -276,7 +271,6 @@ def update_teacher_profile(request, teacher: int):
 def update_student_profile(request, student: int):
     try:
         student = CustomUser.objects.get(id=student)
-        print(student)
         if student.id == request.user.id:
             serializer = UpdateStudentProfileSerializer(student, data=request.data)
             if serializer.is_valid():
@@ -334,11 +328,9 @@ def delete_teacher_profile(request, teacher: int):
 @permission_classes([IsAuthenticated])
 def enroll_to_course(request, course: int):
     course = Course.objects.get(id=course)
-    print(course)
     student = request.user.id
 
     enrolled_course = CourseStudent.objects.filter(student_id_id=student, course_id_id=course)
-    print(enrolled_course)
 
     if enrolled_course:
         return Response({'message': 'You are already enrolled to this course'}, status=status.HTTP_400_BAD_REQUEST)
