@@ -290,6 +290,16 @@ def update_student_profile(request, student: int):
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
+def delete_profile_picture(request, user: int):
+    user = CustomUser.objects.get(id=user)
+
+    if user.profile_picture:
+        user.profile_picture.delete()
+        return Response({'message': 'Profile picture is deleted!'}, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def delete_student_profile(request, student: int):
     try:
         student = CustomUser.objects.get(id=student)

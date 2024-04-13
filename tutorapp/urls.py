@@ -34,4 +34,5 @@ urlpatterns = [
     path('comment/<int:course>', add_comment, name='comment'),
     path('comments/<int:course>', get_comments, name='comments'),
     path('delete-client/<int:student>', delete_client, name='delete-client'),
+    path('delete-picture/<int:user>', delete_profile_picture, name='delete-picture'),
 ]

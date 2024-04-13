@@ -78,6 +78,8 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
 
 
 class UpdateTeacherProfileSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.ImageField(required=False)
+
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'phone_number', 'city', 'experience', 'age', 'bio', 'profile_picture']
@@ -90,7 +92,7 @@ class UpdateTeacherProfileSerializer(serializers.ModelSerializer):
         instance.experience = validated_data.pop('experience', instance.experience)
         instance.age = validated_data.pop('age', instance.age)
         instance.bio = validated_data.pop('bio', instance.bio)
-        instance.profile_picture = validated_data.pop('profile_picture')
+        instance.profile_picture = validated_data.pop('profile_picture', instance.profile_picture)
 
         instance.save()
 
@@ -98,6 +100,8 @@ class UpdateTeacherProfileSerializer(serializers.ModelSerializer):
 
 
 class UpdateStudentProfileSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.ImageField(required=False)
+
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'phone_number', 'city', 'age', 'profile_picture']
@@ -108,7 +112,7 @@ class UpdateStudentProfileSerializer(serializers.ModelSerializer):
         instance.phone_number = validated_data.pop('phone_number', instance.phone_number)
         instance.city = validated_data.pop('city', instance.city)
         instance.age = validated_data.pop('age', instance.age)
-        instance.profile_picture = validated_data.pop('profile_picture')
+        instance.profile_picture = validated_data.pop('profile_picture', instance.profile_picture)
 
         instance.save()
 
