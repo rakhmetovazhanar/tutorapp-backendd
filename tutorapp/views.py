@@ -296,6 +296,8 @@ def delete_profile_picture(request, user: int):
     if user.profile_picture:
         user.profile_picture.delete()
         return Response({'message': 'Profile picture is deleted!'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'message': 'Profile picture is not exists!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['DELETE'])
