@@ -1,9 +1,10 @@
+import os
 from datetime import date
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Avg
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 
@@ -31,6 +32,22 @@ class CustomUser(AbstractUser):
     phone_number = models.CharField(null=False, blank=False, max_length=25)
     bio = models.CharField(null=True, blank=True, max_length=500)
     profile_picture = models.ImageField(null=True, default=None, blank=True, upload_to='profile_pictures/')
+
+
+@receiver(post_delete, sender=CustomUser)
+def delete_user_picture(sender, instance, **kwargs):
+    if instance.profile_picture:
+        path = instance.profile_picture.path
+        if os.path.exists(path):
+            os.remove(path)
+
+
+'''file_path = '/media/profile_pictures/'
+
+if os.path.exists(file_path):
+    print("Picture exists")
+else:
+    print("Picture doesnt exist")'''
 
 
 class EmailCode(models.Model):
