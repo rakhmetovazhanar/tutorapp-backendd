@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-$6yn9vpcm@_avh0^^6^h@b1%)6xt1+*l#!=yil+z#$0idm)xbk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['134.209.250.123', 'localhost']
+ALLOWED_HOSTS = ['134.209.250.123', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'tutorapp',
     'rest_framework',
     'rest_framework.authtoken',
+    'channels_redis',
 ]
 
 MIDDLEWARE = [
@@ -158,3 +159,15 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 CORS_ORIGIN_ALLOW_ALL = True
 #CORS_ALLOW_CREDENTIALS = True
+
+# Channels
+ASGI_APPLICATION = "mytutor.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("134.209.250.123", 6379)],
+        },
+    },
+}

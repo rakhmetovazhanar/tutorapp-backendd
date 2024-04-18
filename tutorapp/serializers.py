@@ -1,5 +1,7 @@
+import uuid
+
 from rest_framework import serializers
-from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent, Comment
+from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent, Comment, VideoConference
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -192,3 +194,15 @@ class CommentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['user', 'course', 'comment']
+
+
+class VideoConferenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VideoConference
+        fields = ['course', 'conference']
+
+
+class TopCoursesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['name', 'avg_rating']

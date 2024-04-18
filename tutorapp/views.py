@@ -1,17 +1,22 @@
+import os
 import random
+from turtle import pd
+
 from django.core.mail import send_mail
+from sqlalchemy import engine
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent, Comment
+from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent, Comment, VideoConference
 from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
                           AddCourseSerializer, CourseUpdateSerializer,
                           UpdateTeacherProfileSerializer, EnrollToCourseSerializer, GetStudentCoursesSerializer,
                           LoginUserSerializer, UpdateStudentProfileSerializer, RateCourseSerializer,
                           ClientsInfoSerializer,
-                          StudentCoursesSerializer, CommentsSerializer)
+                          StudentCoursesSerializer, CommentsSerializer, VideoConferenceSerializer,
+                          TopCoursesSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
 
@@ -258,7 +263,6 @@ def update_teacher_profile(request, teacher: int):
             serializer = UpdateTeacherProfileSerializer(teacher, data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                print(serializer.data)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response({'message': 'Not allowed to update teacher profile'}, status=status.HTTP_400_BAD_REQUEST)
@@ -519,3 +523,77 @@ def get_comments(request, course: int):
     else:
         return Response({'message': 'No comments in this course'}, status=status.HTTP_404_NOT_FOUND)
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_videoconference(request, course: int):
+    course_id = Course.objects.get(id=course)
+    print(course)
+    if course:
+        serializer = VideoConferenceSerializer(data={'course': course_id.id}, context=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({'message': 'No course'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def join_videoconference(request, course: int):
+    url_to_conference = request.data['url']
+    url = VideoConference.objects.get(conference=url_to_conference, course=course)
+    print(url)
+
+    if url:
+        return Response({'message': 'You are joined to videoconference!'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'The url is not correct!'}, status=status.HTTP_404_NOT_FOUND)
+
+
+'''@api_view(['GET'])
+def fetch_course_data(request):
+    query = "SELECT name, avg_rating FROM course ORDER BY avg_rating DESC limit 3;"
+    course_data = pd.read_sql_query(query, engine)
+    print(course_data)
+    if query:
+        serializer = TopCoursesSerializer(course_data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response({'message': 'No course'}, status=status.HTTP_400_BAD_REQUEST)'''
+
+
+support_email = os.getenv('SUPPORT_EMAIL')
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def support(request):
+    username = request.data['username']
+    name = request.data['name']
+    message = request.data['message']
+
+    try:
+        user: CustomUser = CustomUser.objects.get(username=username)
+
+        if user.username == username:
+            subject = 'Message from "Genius.tech". '
+            message = f'Message from email {username}, name: {name}: {message}'
+            from_email = EMAIL_HOST_USER
+            to_email = support_email
+            result = send_mail(subject, message, from_email, [to_email])
+
+            if result > 0:
+                subject = 'Support "Genius.tech". '
+                message = 'Technical support has received your message, we will respond to you within three business days.'
+                from_email = EMAIL_HOST_USER
+
+                answer = send_mail(subject, message, from_email, [user.username])
+
+                if answer:
+                    return Response({'Answer from support is sent.'}, status=status.HTTP_200_OK)
+
+        return Response({'message': 'Incorrect username'}, status=status.HTTP_404_NOT_FOUND)
+    except CustomUser.DoesNotExist:
+        return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)

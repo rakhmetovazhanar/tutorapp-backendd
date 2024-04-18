@@ -1,4 +1,5 @@
 import os
+import uuid
 from datetime import date
 
 from django.db import models
@@ -136,3 +137,7 @@ class CourseStudent(models.Model):
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
     student_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
+
+class VideoConference(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE )
+    conference = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
