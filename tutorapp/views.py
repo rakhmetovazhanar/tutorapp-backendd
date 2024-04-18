@@ -576,15 +576,15 @@ def support(request):
         user: CustomUser = CustomUser.objects.get(username=username)
 
         if user.username == username:
-            subject = 'Message from "Genius.tech". '
-            message = f'Message from email {username}, name: {name}: {message}'
+            subject = 'Сообщение от "Genius.tech". '
+            message = f'Сообщение от {username}, имя: {name}: {message}'
             from_email = EMAIL_HOST_USER
             to_email = support_email
             result = send_mail(subject, message, from_email, [to_email])
 
             if result > 0:
-                subject = 'Support "Genius.tech". '
-                message = 'Technical support has received your message, we will respond to you within three business days.'
+                subject = 'Техническая поддержка "Genius.tech". '
+                message = 'Техническая поддержка получила ваше сообщение, они ответят вам в течении трех рабочих дней.'
                 from_email = EMAIL_HOST_USER
 
                 answer = send_mail(subject, message, from_email, [user.username])
