@@ -1,9 +1,7 @@
 import os
 import random
-from turtle import pd
 
 from django.core.mail import send_mail
-from sqlalchemy import engine
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
