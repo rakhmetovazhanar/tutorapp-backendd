@@ -574,13 +574,16 @@ def support(request):
 
     try:
         user: CustomUser = CustomUser.objects.get(username=username)
+        print(user)
 
         if user.username == username:
+            print(user.username==username)
             subject = 'Сообщение от "Genius.tech". '
             message = f'Сообщение от {username}, имя: {name}: {message}'
             from_email = EMAIL_HOST_USER
             to_email = support_email
             result = send_mail(subject, message, from_email, [to_email])
+            print(result)
 
             if result > 0:
                 subject = 'Техническая поддержка "Genius.tech". '
@@ -588,6 +591,7 @@ def support(request):
                 from_email = EMAIL_HOST_USER
 
                 answer = send_mail(subject, message, from_email, [user.username])
+                print(answer)
 
                 if answer:
                     return Response({'Answer from support is sent.'}, status=status.HTTP_200_OK)
