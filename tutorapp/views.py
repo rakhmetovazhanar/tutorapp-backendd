@@ -563,6 +563,7 @@ def fetch_course_data(request):
 
 
 support_email = os.getenv('SUPPORT_EMAIL')
+print(os.getenv('SUPPORT_EMAIL'))
 
 
 @api_view(['POST'])
