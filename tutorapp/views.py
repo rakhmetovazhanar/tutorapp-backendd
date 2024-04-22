@@ -463,23 +463,6 @@ def get_teacher_clients(request, course: int):
         return Response({'message': 'Not found any courses for request teacher'}, status=status.HTTP_404_NOT_FOUND)
 
 
-'''@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def student_courses(request, student: int):
-    try:
-        courses = CourseStudent.objects.filter(student_id_id=student).values_list('course_id_id', flat=True)
-        print(courses)
-
-        course_name = Course.objects.filter(id__in=courses).values('id', 'name')
-        print(course_name)
-
-        serializer = StudentCoursesSerializer(course_name, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    except Course.DoesNotExist:
-        return Response({'message': 'You do not have any courses'}, status=status.HTTP_404_NOT_FOUND)'''
-
-
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_client(request, student: int):
@@ -509,12 +492,31 @@ def add_comment(request, course: int):
 
 @api_view(['GET'])
 def get_comments(request, course: int):
-    comments = Comment.objects.filter(course_id=course).values('user_id', 'comment', 'created')
+    try:
+        comments = Comment.objects.filter(course_id=course).select_related('user')
+        print(comments)
 
-    if comments:
-        return Response(comments, status=status.HTTP_200_OK)
-    else:
-        return Response({'message': 'No courses found'}, status=status.HTTP_404_NOT_FOUND)
+        if comments:
+            response_data = []
+            for comment in comments:
+                user = comment.user
+                print(user)
+                rating = CourseRating.objects.filter(user_id_id=user, course_id_id=course).first()
+                print(rating)
+                comment_data = {
+                    'profile_picture': user.profile_picture if user.profile_picture else None,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'comment': comment.comment,
+                    'created': comment.created,
+                    'rating': rating.rating,
+                }
+                response_data.append(comment_data)
+            return Response(response_data, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'No comments found'}, status=status.HTTP_404_NOT_FOUND)
+    except CourseRating.DoesNotExist:
+        return Response({'message': 'No rating found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
