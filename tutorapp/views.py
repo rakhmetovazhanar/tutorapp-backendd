@@ -509,17 +509,12 @@ def add_comment(request, course: int):
 
 @api_view(['GET'])
 def get_comments(request, course: int):
-    comments = Comment.objects.values('user_id', 'comment', 'created').get(course_id=course)
+    comments = Comment.objects.filter(course_id=course).values('user_id', 'comment', 'created')
 
     if comments:
-        comment_list = {
-            'user': comments['user_id'],
-            'comment': comments['comment'],
-            'created': comments['created']
-        }
-        return Response(comment_list, status=status.HTTP_200_OK)
+        return Response(comments, status=status.HTTP_200_OK)
     else:
-        return Response({'message': 'No comments in this course'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'message': 'No courses found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
