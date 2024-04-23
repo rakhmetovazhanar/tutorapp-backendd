@@ -504,7 +504,7 @@ def get_comments(request, course: int):
                 rating = CourseRating.objects.filter(user_id_id=user, course_id_id=course).first()
                 print(rating)
                 comment_data = {
-                    'profile_picture': user.profile_picture if user.profile_picture else None,
+                    #'profile_picture': user.profile_picture if user.profile_picture else None,
                     'first_name': user.first_name,
                     'last_name': user.last_name,
                     'comment': comment.comment,
