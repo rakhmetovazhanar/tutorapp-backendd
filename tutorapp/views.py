@@ -511,7 +511,6 @@ def get_comments(request, course: int):
                     'created': comment.created,
                     'rating': rating.rating,
                 }
-                print(user.profile_picture.url)
                 response_data.append(comment_data)
             return Response(response_data, status=status.HTTP_200_OK)
         else:
