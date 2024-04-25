@@ -15,21 +15,8 @@ services:
     networks:
       - tutorapp-network
 
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    restart: unless-stopped
-    tty: true
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - /root/devs-diploma-project:/var/www/html/
-      - ./app.conf:/etc/nginx/conf.d/
-    networks:
-      - tutorapp-network
-
 networks:
   tutorapp-network:
     driver: bridge
+
 
