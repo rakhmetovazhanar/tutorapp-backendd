@@ -1,5 +1,6 @@
+import asyncio
 import json
-
+import websockets
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
@@ -37,3 +38,15 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({"message": message}))
+
+
+async def connect_to_websocket():
+    async with websockets.connect('ws://134.209.250.123/ws/conference/47fd2b14-7c5d-4172-afdd-1c7d4c268972/') as websocket:
+        # Отправка сообщения на сервер
+        await websocket.send(json.dumps({"message": "Hello from WebSocket client!"}))
+
+        # Получение ответа от сервера
+        response = await websocket.recv()
+        print(f"Received message from server: {response}")
+
+asyncio.get_event_loop().run_until_complete(connect_to_websocket())
