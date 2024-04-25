@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'channels_redis',
+    'stripe',
 ]
 
 MIDDLEWARE = [
@@ -172,3 +173,8 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+
+#Stripe
+#STRIPE_SECRET_KEY = 'sk_test_51P9C4ORuoMQmk41RPNaoCLdLUEKPQbuLB07oU9C70DUKfHeNj89uPVa9a1UwLybCr0JuO4VB7r2sfHAZgM5ZPZxQ00bajRfI7A'
+#STRIPE_PUBLISHABLE_KEY = 'pk_test_51P9C4ORuoMQmk41RpuaGTwl8txl8fPxeplqdLSfhmUYNZTThhJXf61a5nJglBMqXvlemLKtyhV3MaNij8ZUrzl4A00whLZvCUd'

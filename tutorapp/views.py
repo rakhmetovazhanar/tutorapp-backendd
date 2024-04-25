@@ -7,6 +7,8 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView
+
 from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent, Comment, VideoConference
 from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
                           AddCourseSerializer, CourseUpdateSerializer,
@@ -14,9 +16,10 @@ from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProf
                           LoginUserSerializer, UpdateStudentProfileSerializer, RateCourseSerializer,
                           ClientsInfoSerializer,
                           StudentCoursesSerializer, CommentsSerializer, VideoConferenceSerializer,
-                          TopCoursesSerializer)
+                          TopCoursesSerializer, CardInformationSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
+import stripe
 
 
 @api_view(['POST'])
@@ -558,7 +561,6 @@ def fetch_course_data(request):
 
     return Response({'message': 'No course'}, status=status.HTTP_400_BAD_REQUEST)'''
 
-
 support_email = os.getenv('SUPPORT_EMAIL')
 print(os.getenv('SUPPORT_EMAIL'))
 
@@ -575,7 +577,7 @@ def support(request):
         print(user)
 
         if user.username == username:
-            print(user.username==username)
+            print(user.username == username)
             subject = 'Сообщение от "Genius.tech". '
             message = f'Сообщение от {username}, имя: {name}: {message}'
             from_email = EMAIL_HOST_USER
@@ -597,3 +599,72 @@ def support(request):
         return Response({'message': 'Incorrect username'}, status=status.HTTP_404_NOT_FOUND)
     except CustomUser.DoesNotExist:
         return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+#payment
+stripe.api_key = 'sk_test_51P9C4ORuoMQmk41RPNaoCLdLUEKPQbuLB07oU9C70DUKfHeNj89uPVa9a1UwLybCr0JuO4VB7r2sfHAZgM5ZPZxQ00bajRfI7A'
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def payment(request, course: int):
+    email = request.data['email']
+    course = Course.objects.get(id=course)
+
+    serializer = CardInformationSerializer(data=request.data)
+    if serializer.is_valid():
+        data_dict = serializer.data
+
+    card_details = {
+        'email': email,
+        'card_number': data_dict['card_number'],
+        'expiry_month': data_dict['expiry_month'],
+        'expiry_year': data_dict['expiry_year'],
+        'cvc': data_dict['cvc'],
+    }
+
+    payment_intent = stripe.PaymentIntent.create(
+        amount=course.cost,
+        currency='usd',
+        payment_method_types=['card'],
+        receipt_email=email,
+        confirm=True
+    )
+
+    payment_intent_modified = stripe.PaymentIntent.modify(
+        payment_intent['id'],
+        payment_method=card_details,
+    )
+    try:
+        payment_confirm = stripe.PaymentIntent.confirm(
+            payment_intent['id']
+        )
+        payment_intent_modified = stripe.PaymentIntent.retrieve(payment_intent['id'])
+    except:
+        payment_intent_modified = stripe.PaymentIntent.retrieve(payment_intent['id'])
+        payment_confirm = {
+            "stripe_payment_error": "Failed",
+            "code": payment_intent_modified['last_payment_error']['code'],
+            "message": payment_intent_modified['last_payment_error']['message'],
+            'status': "Failed"
+        }
+    if payment_intent_modified and payment_intent_modified['status'] == 'succeeded':
+        response = {
+            'message': "Card Payment Success",
+            'status': status.HTTP_200_OK,
+            "card_details": card_details,
+            "payment_intent": payment_intent_modified,
+            "payment_confirm": payment_confirm
+        }
+        return Response(response, status=status.HTTP_200_OK)
+    else:
+        response = {
+            'message': "Card Payment Failed",
+            'status': status.HTTP_400_BAD_REQUEST,
+            "card_details": card_details,
+            "payment_intent": payment_intent_modified,
+            "payment_confirm": payment_confirm
+        }
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+

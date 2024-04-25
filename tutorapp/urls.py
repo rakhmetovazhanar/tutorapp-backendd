@@ -57,4 +57,7 @@ urlpatterns = [
     #support
     path('support/', support, name='support'),
 
+    #payment
+    path('payment/<int:course>', payment, name='payment'),
+
 ]
