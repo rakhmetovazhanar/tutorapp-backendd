@@ -1,5 +1,4 @@
 import uuid
-
 from rest_framework import serializers
 from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent, Comment, VideoConference
 import django.contrib.auth.password_validation as validators
@@ -210,12 +209,6 @@ class VideoConferenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = VideoConference
         fields = ['course', 'conference']
-
-
-class TopCoursesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Course
-        fields = ['name', 'avg_rating']
 
 
 #payment

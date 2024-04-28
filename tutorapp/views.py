@@ -7,7 +7,6 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.views import APIView
 
 from .models import CustomUser, EmailCode, Course, Category, CourseRating, CourseStudent, Comment, VideoConference
 from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProfileSerializer, TeacherProfileSerializer,
@@ -15,8 +14,7 @@ from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProf
                           UpdateTeacherProfileSerializer, EnrollToCourseSerializer, GetStudentCoursesSerializer,
                           LoginUserSerializer, UpdateStudentProfileSerializer, RateCourseSerializer,
                           ClientsInfoSerializer,
-                          StudentCoursesSerializer, CommentsSerializer, VideoConferenceSerializer,
-                          TopCoursesSerializer, CardInformationSerializer)
+                          StudentCoursesSerializer, CommentsSerializer, VideoConferenceSerializer, CardInformationSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
 import stripe
@@ -550,19 +548,7 @@ def join_videoconference(request, course: int):
         return Response({'The url is not correct!'}, status=status.HTTP_404_NOT_FOUND)
 
 
-'''@api_view(['GET'])
-def fetch_course_data(request):
-    query = "SELECT name, avg_rating FROM course ORDER BY avg_rating DESC limit 3;"
-    course_data = pd.read_sql_query(query, engine)
-    print(course_data)
-    if query:
-        serializer = TopCoursesSerializer(course_data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    return Response({'message': 'No course'}, status=status.HTTP_400_BAD_REQUEST)'''
-
 support_email = os.getenv('SUPPORT_EMAIL')
-print(os.getenv('SUPPORT_EMAIL'))
 
 
 @api_view(['POST'])
@@ -666,5 +652,7 @@ def payment(request, course: int):
             "payment_confirm": payment_confirm
         }
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 

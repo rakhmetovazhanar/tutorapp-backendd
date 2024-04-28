@@ -127,12 +127,6 @@ def course_avr_rating(sender, instance, **kwargs):
         course.save()
 
 
-class Lesson(models.Model):
-    course_id = models.ForeignKey(Course, on_delete=models.CASCADE, max_length=250, blank=False, null=False)
-    start_date_time = models.DateTimeField(max_length=250, blank=False, null=False)
-    end_date_time = models.DateTimeField(max_length=250, blank=False, null=False)
-
-
 class CourseStudent(models.Model):
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
     student_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

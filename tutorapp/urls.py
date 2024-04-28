@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import *
+from .dashboard import *
 
 urlpatterns = [
     #register
@@ -52,7 +53,12 @@ urlpatterns = [
     path('join-to-video-conference/<int:course>', join_videoconference, name='join-to-videoconference'),
 
     #dashboard
-    #path('top-courses/', fetch_course_data, name='top-courses'),
+    path('experience-dashboard/', experience_dashboard, name='experience-dashboard'),
+    path('age-dashboard/', age_dashboard, name='age-dashboard'),
+    path('city-dashboard/', city_dashboard, name='city-dashboard'),
+    path('student-dashboard/', count_courses_student_dashboard, name='student-dashboard'),
+    path('top-courses-dashboard/', top_courses, name='top-courses-dashboard'),
+    path('users-number-dashboard/', number_of_users_dashboard, name='users-number-dashboard'),
 
     #support
     path('support/', support, name='support'),
