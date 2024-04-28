@@ -369,7 +369,7 @@ def get_student_courses(request, student: int):
 @api_view(['GET'])
 def course_details(request, course: int):
     course = Course.objects.get(id=course)
-    teacher_info = CustomUser.objects.values('first_name', 'last_name').get(id=course.teacher_id_id)
+    teacher_info = CustomUser.objects.values('first_name', 'last_name', 'profile_picture').get(id=course.teacher_id_id)
     course_info = {
         'id': course.id,
         'name': course.name,
@@ -382,7 +382,8 @@ def course_details(request, course: int):
         'first_name': teacher_info['first_name'],
         'last_name': teacher_info['last_name'],
         'day_time': course.day_time,
-        'average_rating': course.avg_rating
+        'average_rating': course.avg_rating,
+        'profile_picture': teacher_info['profile_picture'],
     }
     return Response(course_info, status=status.HTTP_200_OK)
 
@@ -585,6 +586,31 @@ def support(request):
         return Response({'message': 'Incorrect username'}, status=status.HTTP_404_NOT_FOUND)
     except CustomUser.DoesNotExist:
         return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def number_of_courses(request, teacher: int):
+    courses = Course.objects.filter(teacher_id_id=teacher).count()
+    return Response(courses, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def number_of_students(request, teacher: int):
+    courses = Course.objects.filter(teacher_id_id=teacher).values_list('id', flat=True)
+    students = CourseStudent.objects.filter(course_id__in=courses).count()
+
+    return Response(students, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def number_of_comments(request, teacher: int):
+    courses = Course.objects.filter(teacher_id_id=teacher)
+    comments = Comment.objects.filter(course_id__in=courses).count()
+    return Response(comments, status=status.HTTP_200_OK)
+
 
 
 #payment

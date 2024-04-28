@@ -52,6 +52,11 @@ urlpatterns = [
     path('create-video-conference/<int:course>', create_videoconference, name='create-videoconference'),
     path('join-to-video-conference/<int:course>', join_videoconference, name='join-to-videoconference'),
 
+    #teacher profile info
+    path('courses/<int:teacher>', number_of_courses, name='courses'),
+    path('students/<int:teacher>', number_of_students, name='students'),
+    path('feedback/<int:teacher>', number_of_comments, name='comments'),
+
     #dashboard
     path('experience-dashboard/', experience_dashboard, name='experience-dashboard'),
     path('age-dashboard/', age_dashboard, name='age-dashboard'),
