@@ -383,7 +383,7 @@ def course_details(request, course: int):
         'last_name': teacher_info.last_name,
         'day_time': course.day_time,
         'average_rating': course.avg_rating,
-        'profile_picture': teacher_info.profile_picture.url,
+        'profile_picture': teacher_info.profile_picture.url if teacher_info.profile_picture else None,
     }
     return Response(course_info, status=status.HTTP_200_OK)
 
