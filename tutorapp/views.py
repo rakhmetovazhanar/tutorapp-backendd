@@ -369,7 +369,7 @@ def get_student_courses(request, student: int):
 @api_view(['GET'])
 def course_details(request, course: int):
     course = Course.objects.get(id=course)
-    teacher_info = CustomUser.objects.values('first_name', 'last_name', 'profile_picture').get(id=course.teacher_id_id)
+    teacher_info = CustomUser.objects.get(id=course.teacher_id_id)
     course_info = {
         'id': course.id,
         'name': course.name,
@@ -379,11 +379,11 @@ def course_details(request, course: int):
         'cost': course.cost,
         'language': course.language,
         'teacher_id_id': course.teacher_id_id,
-        'first_name': teacher_info['first_name'],
-        'last_name': teacher_info['last_name'],
+        'first_name': teacher_info.first_name,
+        'last_name': teacher_info.last_name,
         'day_time': course.day_time,
         'average_rating': course.avg_rating,
-        'profile_picture': teacher_info['profile_picture'],
+        'profile_picture': teacher_info.profile_picture.url,
     }
     return Response(course_info, status=status.HTTP_200_OK)
 
