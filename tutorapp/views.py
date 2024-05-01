@@ -536,7 +536,7 @@ def create_videoconference(request, course: int):
         return Response({'message': 'No course'}, status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def join_videoconference(request, course: int):
     url_to_conference = request.data['url']
