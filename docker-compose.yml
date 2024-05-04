@@ -25,6 +25,9 @@ services:
     networks:
       - tutorapp-network
 
+volumes:
+  redis_data:
+    
 networks:
   tutorapp-network:
     driver: bridge
