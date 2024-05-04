@@ -544,7 +544,7 @@ def join_videoconference(request, course: int):
     print(url)
 
     if url:
-        return Response({'message': 'You are joined to videoconference!'}, status=status.HTTP_200_OK)
+        return Response({'url:': url.conference}, status=status.HTTP_200_OK)
     else:
         return Response({'The url is not correct!'}, status=status.HTTP_404_NOT_FOUND)
 
