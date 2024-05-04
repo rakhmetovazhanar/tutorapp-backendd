@@ -23,7 +23,8 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
+        print(text_data_json)
+        message = text_data_json["roomName"]
 
         # Send message to room group
         await self.channel_layer.group_send(
