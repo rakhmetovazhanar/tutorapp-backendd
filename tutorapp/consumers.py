@@ -29,9 +29,9 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
 
         if (sent_type == "offer") or (sent_type == "answer"):
             await self.channel_layer.group_send(
-                self.room_group_name, {"type": "chat.message",
-                                       "sent_type": sent_type,
-                                       "message_sdp": message_sdp}
+                self.room_group_name, {#"type": "chat.message",
+                                       "roomName": message,
+                                       "sdp": message_sdp}
             )
             return
 
