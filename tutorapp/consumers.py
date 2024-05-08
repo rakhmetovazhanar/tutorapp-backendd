@@ -23,14 +23,9 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        #print(text_data_json)
         message = text_data_json["roomName"]
         sent_type = text_data_json["type"]
         message_sdp = text_data_json.get("sdp", "")
-
-        print("Received message (room name): ", message)
-        print("Received type: ", sent_type)
-        print("Received sdp: ", message_sdp)
 
         if (sent_type == "offer") or (sent_type == "answer"):
             await self.channel_layer.group_send(
