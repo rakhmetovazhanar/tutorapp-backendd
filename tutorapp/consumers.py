@@ -41,13 +41,13 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
             return
 
     async def chat_message(self, event):
-        sent_type = event["sent_type"]
-        message_sdp = event["message_sdp"]
+        sent_type = event["message"]
+       # message_sdp = event["message_sdp"]
 
         # Send message to WebSocket
         await self.send(
             text_data=json.dumps({
                 "type": sent_type,
-                "message_sdp": message_sdp,
+                #"message_sdp": message_sdp,
                 })
         )
