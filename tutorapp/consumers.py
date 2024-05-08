@@ -7,17 +7,13 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
         print('connecting')
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f"conference_{self.room_name}"
+        print("room name: ", self.room_name)
+        print("group name: ", self.room_group_name)
 
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
-
-        # Получаем список текущих участников в группе
-        group_channels = await self.channel_layer.group_channels(self.room_group_name)
-
-        # Выводим информацию о текущих участниках
-        print(f"Текущие участники в группе {self.room_group_name}: {group_channels}")
 
         await self.accept()
 
