@@ -26,6 +26,7 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
         #print(text_data_json)
         message = text_data_json["roomName"]
         sent_type = text_data_json["type"]
+        print(text_data_json["sdp"])
         message_sdp = text_data_json["sdp"]
 
         print("Received message (room name): ", message)
