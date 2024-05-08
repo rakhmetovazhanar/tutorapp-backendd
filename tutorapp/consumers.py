@@ -10,14 +10,11 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
         print("room name: ", self.room_name)
         print("group name: ", self.room_group_name)
 
-        try:
-            await self.channel_layer.group_add(
-                self.room_group_name,
-                self.channel_name
-            )
-            print(f"User: {self.channel_name} added in group: {self.room_group_name}")
-        except Exception as e:
-            print(f"Error while adding user in group: {e}")
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        print(f"User: {self.channel_name} added in group: {self.room_group_name}")
 
         await self.accept()
 
@@ -38,15 +35,11 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
         print("Message type: ", sent_type)
 
         if (sent_type == "offer") or (sent_type == "answer"):
-            try:
-                await self.channel_layer.group_send(
-                    self.room_group_name, {"type": "chat.message",
-                                           "text_data_json": text_data_json
-                                           }
-                )
-                print(f"Send message to group: {self.room_group_name}")
-            except Exception as e:
-                print(f"Error while sending message to group: {e}")
+            await self.channel_layer.group_send(
+                self.room_group_name, {"type": "chat.message",
+                                       "text_data_json": text_data_json}
+            )
+            #print(f"Send message to group: {self.room_group_name}")
 
     async def chat_message(self, event):
         text_data_json = event["text_data_json"]
