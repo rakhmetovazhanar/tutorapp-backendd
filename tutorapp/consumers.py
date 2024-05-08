@@ -30,24 +30,19 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
         if (sent_type == "offer") or (sent_type == "answer"):
             await self.channel_layer.group_send(
                 self.room_group_name, {"type": "chat.message",
-                                       "text_data_json": text_data_json}
+                                       "sent_type": sent_type,
+                                       "message_sdp": message_sdp}
             )
             return
 
-        # Send message to room group
-        # await self.channel_layer.group_send(
-        #     self.room_group_name, {"type": "chat.message",
-        #                            "text_data_json": text_data_json}
-        # )
-
     async def chat_message(self, event):
-        message = event["text_data_json"]
-        sent_type = message["type"]
-        message_sdp = message["sdp"]
+        sent_type = event["sent_type"]
+        message_sdp = event["message_sdp"]
 
         # Send message to WebSocket
         await self.send(
             text_data=json.dumps({
                 "type": sent_type,
-                "message_sdp": message_sdp,})
+                "message_sdp": message_sdp,
+                })
         )
