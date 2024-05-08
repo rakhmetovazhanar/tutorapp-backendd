@@ -41,7 +41,7 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
             return
 
     async def chat_message(self, event):
-        sent_type = event["message"]
+        sent_type = event["sent_type"]
        # message_sdp = event["message_sdp"]
 
         # Send message to WebSocket
