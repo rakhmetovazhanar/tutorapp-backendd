@@ -13,6 +13,12 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
+        # Получаем список текущих участников в группе
+        group_channels = await self.channel_layer.group_channels(self.room_group_name)
+
+        # Выводим информацию о текущих участниках
+        print(f"Текущие участники в группе {self.room_group_name}: {group_channels}")
+
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -44,7 +50,6 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
         sent_type = event["sent_type"]
         message_room_name = event["roomName"]
         message_sdp = event["sdp"]
-
 
         # Send message to WebSocket
         await self.send(
