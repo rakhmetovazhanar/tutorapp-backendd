@@ -19,5 +19,6 @@ application = ProtocolTypeRouter({
         AuthMiddlewareStack(
             URLRouter(websocket_urlpatterns)
         )
+        ["http://genuis.tech/"],
     ),
 })

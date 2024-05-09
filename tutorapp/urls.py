@@ -74,6 +74,7 @@ urlpatterns = [
     #main page info
     path('top-teacher/', top_three_teachers, name='top-teacher'),
     path('teacher-comments/', comments, name='teacher-comments'),
+
     path('students-number/', total_students, name='students-number'),
     path('teachers-number/', total_teachers, name='teachers-number'),
     path('courses-number/', total_courses, name='courses-number'),
