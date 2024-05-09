@@ -722,3 +722,31 @@ def comments(request):
         comment_info.append(comment_data)
 
     return Response(comment_info, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def total_students(request):
+    students = CustomUser.objects.filter(role='student').count()
+
+    return Response(students, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def total_teachers(request):
+    teachers = CustomUser.objects.filter(role='teacher').count()
+
+    return Response(teachers, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def total_courses(request):
+    courses = Course.objects.all().count()
+
+    return Response(courses, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def total_comments(request):
+    comments_num = Comment.objects.all().count()
+
+    return Response(comments_num, status=status.HTTP_200_OK)
