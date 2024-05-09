@@ -540,7 +540,7 @@ def create_videoconference(request, course: int):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def join_videoconference(request, course: int):
-    url_to_conference = request.data['url']
+    url_to_conference = request.data.get('url')
     url = VideoConference.objects.get(conference=url_to_conference, course=course)
     print(url)
 
