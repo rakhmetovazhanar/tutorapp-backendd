@@ -680,5 +680,24 @@ def payment(request, course: int):
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
+def top_three_teachers(request):
+    courses = Course.objects.filter(avg_rating__isnull=False).order_by('-avg_rating')[:4]
+
+    teacher_info = []
+
+    for course in courses:
+        teacher = course.teacher_id
+
+        teachers = {
+            'profile_picture': teacher.profile_picture.url if teacher.profile_picture else None,
+            'first_name': teacher.first_name,
+            'last_name': teacher.last_name,
+            'course_name': course.name
+        }
+        teacher_info.append(teachers)
+
+    return Response(teacher_info, status=status.HTTP_200_OK)
+
 
 

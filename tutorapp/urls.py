@@ -71,4 +71,7 @@ urlpatterns = [
     #payment
     path('payment/<int:course>', payment, name='payment'),
 
+    #main page info
+    path('top-teacher/', top_three_teachers, name='top-teacher'),
+
 ]

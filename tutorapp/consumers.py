@@ -39,7 +39,6 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
                 self.room_group_name, {"type": "chat.message",
                                        "text_data_json": text_data_json}
             )
-            #print(f"Send message to group: {self.room_group_name}")
 
     async def chat_message(self, event):
         text_data_json = event["text_data_json"]
