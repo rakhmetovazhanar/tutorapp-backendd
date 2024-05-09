@@ -541,6 +541,8 @@ def create_videoconference(request, course: int):
 @permission_classes([IsAuthenticated])
 def join_videoconference(request, course: int):
     url_to_conference = request.data.get('url')
+    course = Course.objects.get(id=course)
+    print(course)
     url = VideoConference.objects.get(conference=url_to_conference, course=course)
     print(url)
 
