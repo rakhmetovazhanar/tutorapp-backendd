@@ -14,7 +14,8 @@ from .serializers import (CustomUserSerializer, EmailUserSerializer, StudentProf
                           UpdateTeacherProfileSerializer, EnrollToCourseSerializer, GetStudentCoursesSerializer,
                           LoginUserSerializer, UpdateStudentProfileSerializer, RateCourseSerializer,
                           ClientsInfoSerializer,
-                          StudentCoursesSerializer, CommentsSerializer, VideoConferenceSerializer, CardInformationSerializer)
+                          StudentCoursesSerializer, CommentsSerializer, VideoConferenceSerializer,
+                          CardInformationSerializer)
 from rest_framework.permissions import IsAuthenticated
 from django.conf.global_settings import EMAIL_HOST_USER
 import stripe
@@ -612,8 +613,7 @@ def number_of_comments(request, teacher: int):
     return Response(comments, status=status.HTTP_200_OK)
 
 
-
-#payment
+# payment
 stripe.api_key = 'sk_test_51P9C4ORuoMQmk41RPNaoCLdLUEKPQbuLB07oU9C70DUKfHeNj89uPVa9a1UwLybCr0JuO4VB7r2sfHAZgM5ZPZxQ00bajRfI7A'
 
 
@@ -700,4 +700,25 @@ def top_three_teachers(request):
     return Response(teacher_info, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+def comments(request):
+    three_comments = Comment.objects.order_by('-created')[:3]
 
+    comment_info = []
+
+    for three_comment in three_comments:
+        user = three_comment.user
+        course = three_comment.course
+
+        rating = CourseRating.objects.filter(user_id_id=user, course_id_id=course).first()
+
+        comment_data = {
+            'profile_picture': user.profile_picture.url if user.profile_picture else None,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'comment': three_comment.comment,
+            'rating': rating.rating,
+        }
+        comment_info.append(comment_data)
+
+    return Response(comment_info, status=status.HTTP_200_OK)

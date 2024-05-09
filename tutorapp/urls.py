@@ -73,5 +73,6 @@ urlpatterns = [
 
     #main page info
     path('top-teacher/', top_three_teachers, name='top-teacher'),
+    path('teacher-comments/', comments, name='teacher-comments'),
 
 ]
