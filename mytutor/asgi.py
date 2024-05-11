@@ -6,7 +6,7 @@ from django.core.asgi import get_asgi_application
 from tutorapp.routing import websocket_urlpatterns
 from django.urls import path
 
-from mytutor.tutorapp.consumers import ConferenceConsumer
+from tutorapp.consumers import ConferenceConsumer
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mytutor.settings")
 # Initialize Django ASGI application early to ensure the AppRegistry
