@@ -21,6 +21,7 @@ ALLOWED_HOSTS = ['134.209.250.123', 'localhost', '127.0.0.1', 'genuis.tech']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
