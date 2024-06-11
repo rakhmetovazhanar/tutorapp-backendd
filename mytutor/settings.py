@@ -164,9 +164,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 #CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://genuis.tech",
-    "http://134.209.250.123",
+    '*'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
