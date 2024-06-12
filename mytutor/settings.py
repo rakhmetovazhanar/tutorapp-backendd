@@ -166,7 +166,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 #CORS_ALLOWED_ORIGINS = [
 #    'http://localhost:8000', 'http://134.209.250.123:8000'
 #]
-
+#
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -174,6 +174,12 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     'Access-Control-Allow-Headers',
     'Access-Control-Allow-Methods',
 ]
+
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 # Channels
 ASGI_APPLICATION = "mytutor.asgi.application"
@@ -186,7 +192,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
 
 #Stripe
 #STRIPE_SECRET_KEY = 'sk_test_51P9C4ORuoMQmk41RPNaoCLdLUEKPQbuLB07oU9C70DUKfHeNj89uPVa9a1UwLybCr0JuO4VB7r2sfHAZgM5ZPZxQ00bajRfI7A'

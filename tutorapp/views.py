@@ -1,5 +1,6 @@
 import os
 import random
+import string
 
 from django.core.mail import send_mail
 from rest_framework import status
@@ -539,12 +540,11 @@ def create_videoconference(request, course: int):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def join_videoconference(request, course: int):
+def join_videoconference(request, url):
     url_to_conference = request.data.get('url')
-    course = Course.objects.get(id=course)
-    print(course)
-    url = VideoConference.objects.get(conference=url_to_conference, course=course)
+    #course = Course.objects.get(id=course)
     print(url)
+    url = VideoConference.objects.get(conference=url_to_conference)
 
     if url:
         return Response({'url': url.conference}, status=status.HTTP_200_OK)
