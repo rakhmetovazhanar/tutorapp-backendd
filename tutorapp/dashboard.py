@@ -25,14 +25,14 @@ def experience_dashboard(request):
     x = result_experience['skill_group']
     y = result_experience['count']
 
-    plt.figure(figsize=(8, 6), facecolor='#D8E7F7')
+    plt.figure(figsize=(8, 6), facecolor='#FFFFFF')
     ax = plt.gca()
-    plt.plot(x, y, marker='o', linestyle='-', color='#A2639C')
+    plt.plot(x, y, marker='o', linestyle='-', color='#252641')
 
     for i, (xi, yi) in enumerate(zip(x, y)):
         plt.annotate(f'({yi})', (xi, yi), textcoords="offset points", xytext=(0, 10), ha='center')
 
-    ax.set_facecolor('#D8E7F7')
+    ax.set_facecolor('#FFFFFF')
 
     plt.title('Статистика опыта работы наших репетитеров',
               fontdict={'fontsize': 14, 'fontweight': 'bold', 'fontfamily': 'serif'})
@@ -58,10 +58,10 @@ def age_dashboard(request):
     query_age = "select age_count, count(*) from(select case when age>=18 and age<=23 then '18-20 лет'when age>=24 and age<=29 then '24-29 лет'when age>=30 and age<=35 then '30-35 лет'when age>=36 and age>=41 then '36-41 лет'when age>=42 and age<=47 then '42-47 лет'when age>=48 and age<=53 then '48-53 лет'when age>=54 and age<=59 then '54-59 лет' else '60+ лет'end age_count from public.tutorapp_customuser where role = 'teacher') group by age_count order by age_count;"
     result_age = pd.read_sql(query_age, engine)
 
-    plt.figure(figsize=(8, 6), facecolor='#D8E7F7')
+    plt.figure(figsize=(8, 6), facecolor='#FFFFFF')
     ax = plt.gca()
-    plt.barh(result_age['age_count'], result_age['count'], color='#DEA2AD')
-    ax.set_facecolor('#D8E7F7')
+    plt.barh(result_age['age_count'], result_age['count'], color='#252641')
+    ax.set_facecolor('#FFFFFF')
     plt.title('Статистика возрастов наших репетиторов',
               fontdict={'fontsize': 14, 'fontweight': 'bold', 'fontfamily': 'serif'})
     plt.xlabel('Число')
@@ -85,10 +85,9 @@ def city_dashboard(request):
     query_city = " SELECT city, count(*) as count FROM public.tutorapp_customuser where role='teacher' group by city ORDER BY count DESC limit 15"
     result_city = pd.read_sql(query_city, engine)
 
-    colors = ['#E495A5', '#E494AE', '#E393B6', '#E193BF', '#DE94C6', '#DA95CD', '#D497D3', '#CD99D8', '#C59CDC',
-              '#BC9FDF',
-              '#B1A2E1', '#A6A6E2', '#99A9E2', '#8BADE0', '#7DB0DD']
-    plt.figure(figsize=(8, 6), facecolor='#D8E7F7')
+    colors = ['#EDB62E', '#DFAC30', '#D1A232', '#C29833', '#B48E34', '#A68436', '#987A38', '#8A7039',
+              '#7C653A', '#6E5B3C', '#60513E', '#60513E', '#433D40', '#353342', '#272944']
+    plt.figure(figsize=(8, 6), facecolor='#FFFFFF')
     plt.pie(result_city['count'], autopct='%1.1f%%', startangle=140, colors=colors)
     plt.title('Из каких городов наши репетиторы',
               fontdict={'fontsize': 14, 'fontweight': 'bold', 'fontfamily': 'serif'})
@@ -130,14 +129,14 @@ def count_courses_student_dashboard(request):
     query_countStuOfCourse = "SELECT course.name as name, count(stu.student_id_id) as count FROM public.tutorapp_coursestudent stu left join public.tutorapp_course course on course.id =stu.course_id_id group by course.name order by count DESC limit 5"
     result_countStuOfCourse = pd.read_sql(query_countStuOfCourse, engine)
 
-    colors = ['#F5C3E9', '#F08FC2', '#A2639C', '#5F4670', '#89265C']
+    colors = ['#191F45', '#272C94', '#475BB7', '#526DF0', '#93A5FD']
     explode = (0.05, 0.05, 0.05, 0.05, 0.05)
 
-    plt.figure(facecolor='#D8E7F7')
+    plt.figure(facecolor='#FFFFFF')
 
     plt.pie(result_countStuOfCourse['count'], colors=colors, pctdistance=0.85, explode=explode)
 
-    centre_circle = plt.Circle((0, 0), 0.70, fc='#D8E7F7')
+    centre_circle = plt.Circle((0, 0), 0.70, fc='#FFFFFF')
     fig = plt.gcf()
     fig.gca().add_artist(centre_circle)
 
@@ -207,15 +206,15 @@ def fetch_scores():
 
 
 def plot_course_results(course, scores_by_test, cohort_size):
-    plt.figure(figsize=(8, 6), facecolor='#D8E7F7')
+    plt.figure(figsize=(8, 6), facecolor='#FFFFFF')
     ax = plt.gca()
 
-    bars = plt.bar(list(scores_by_test.keys()), [score.value for score in scores_by_test.values()], color='#7D4C73')
+    bars = plt.bar(list(scores_by_test.keys()), [score.value for score in scores_by_test.values()], color='#F5C400')
 
     for bar in bars:
         plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), str(bar.get_height()), ha='center', va='bottom')
 
-    ax.set_facecolor('#D8E7F7')
+    ax.set_facecolor('#FFFFFF')
 
     legend_labels = [f"Top {i + 1}: {course} - {scores_by_test[course].value}" for i, course in
                      enumerate(scores_by_test.keys())]
@@ -250,7 +249,7 @@ def number_of_users_dashboard(request):
     query_userCounter = "SELECT TO_CHAR(date_joined, 'Month') AS month_name, SUM(CASE WHEN role = 'teacher' THEN 1 ELSE 0 END) AS teacher_count, SUM(CASE WHEN role = 'student' THEN 1 ELSE 0 END) AS student_count FROM public.tutorapp_customuser GROUP BY  EXTRACT(MONTH FROM date_joined), TO_CHAR(date_joined, 'Month') ORDER BY EXTRACT(MONTH FROM date_joined);"
     result_userCounter = pd.read_sql(query_userCounter, engine)
 
-    plt.figure(facecolor='#D8E7F7')
+    plt.figure(facecolor='#FFFFFF ')
     ax = plt.gca()
 
     X = result_userCounter['month_name']
@@ -259,10 +258,10 @@ def number_of_users_dashboard(request):
 
     X_axis = np.arange(len(X))
 
-    plt.bar(X_axis - 0.2, Yteacher, 0.4, label='Teachers', linewidth=1.5, color="#F08FC2")
-    plt.bar(X_axis + 0.2, Zstudent, 0.4, label='Students', linewidth=1.5, color="#A2639C")
+    plt.bar(X_axis - 0.2, Yteacher, 0.4, label='Teachers', linewidth=1.5, color="#191F45")
+    plt.bar(X_axis + 0.2, Zstudent, 0.4, label='Students', linewidth=1.5, color="#475BB7")
 
-    ax.set_facecolor('#D8E7F7')
+    ax.set_facecolor('#FFFFFF')
 
     plt.xticks(X_axis, X)
     plt.xlabel("Месяц")
