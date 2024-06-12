@@ -249,7 +249,7 @@ def number_of_users_dashboard(request):
     query_userCounter = "SELECT TO_CHAR(date_joined, 'Month') AS month_name, SUM(CASE WHEN role = 'teacher' THEN 1 ELSE 0 END) AS teacher_count, SUM(CASE WHEN role = 'student' THEN 1 ELSE 0 END) AS student_count FROM public.tutorapp_customuser GROUP BY  EXTRACT(MONTH FROM date_joined), TO_CHAR(date_joined, 'Month') ORDER BY EXTRACT(MONTH FROM date_joined);"
     result_userCounter = pd.read_sql(query_userCounter, engine)
 
-    plt.figure(facecolor='#D8E7F7')
+    plt.figure(facecolor='#FFFFFF')
     ax = plt.gca()
 
     X = result_userCounter['month_name']
@@ -258,10 +258,10 @@ def number_of_users_dashboard(request):
 
     X_axis = np.arange(len(X))
 
-    plt.bar(X_axis - 0.2, Yteacher, 0.4, label='Teachers', linewidth=1.5, color="#F08FC2")
-    plt.bar(X_axis + 0.2, Zstudent, 0.4, label='Students', linewidth=1.5, color="#A2639C")
+    plt.bar(X_axis - 0.2, Yteacher, 0.4, label='Teachers', linewidth=1.5, color="#191F45")
+    plt.bar(X_axis + 0.2, Zstudent, 0.4, label='Students', linewidth=1.5, color="#475BB7")
 
-    ax.set_facecolor('#D8E7F7')
+    ax.set_facecolor('#FFFFFF')
 
     plt.xticks(X_axis, X)
     plt.xlabel("Месяц")
