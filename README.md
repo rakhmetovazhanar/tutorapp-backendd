@@ -2,13 +2,14 @@
 📌 About the Project
 This project is a backend service for an educational platform where users can browse courses, register, complete lessons. Instructors can add courses, create videoconference, manage content.
 
-The backend is built using Django and Django REST Framework (DRF), with authentication based on JWT tokens. The project is deployed on DigitalOcean.
+The backend is built using Django and Django REST Framework (DRF), with authentication based on tokens. The project is deployed on DigitalOcean.
 
 🚀 Features
-🔐 User authentication and registration
+🔐 User authentication and registration (token-based)
 📚 Course browsing and detailed course view
 📖 Lesson management
 🎓 Instructor functionality for adding and managing courses
+📹 Real-time video conferencing (WebSockets & Daphne)
 ⚙️ Admin panel for managing users and content
 🛠️ Technologies Used
 Backend: Django, Django REST Framework
